@@ -6,6 +6,7 @@ public class Song {
 	private String album;
 	private int rating;
 	private boolean favorite;
+	private int timesPlayed;
 
 	public Song(String songName,String authorName,String album) {
 		this.album=album;
@@ -13,16 +14,27 @@ public class Song {
 		this.songName = songName;
 		this.rating = 0;
 		this.favorite=false;
+		this.timesPlayed=0;
+		
+	}
+	
+	public int getTimesPlayed() {
+		return timesPlayed;
+	}
+	
+	public void playSong() {
+		timesPlayed++;
 	}
 	
 
 
 	public void setFavorite(boolean value) {
 		this.favorite = value;
-		
-
 	}
 	
+	/*
+	 * sets rating to value
+	 */
 	public void setRating(int value) {
 		if(value==5) {
 			favorite=true;

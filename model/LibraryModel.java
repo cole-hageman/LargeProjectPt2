@@ -1,6 +1,8 @@
 package model;
 import java.util.*;
 
+import com.sun.jdi.Value;
+
 /*
  * Class: LibraryModel
  * Purpose: The main database for the user's experience.
@@ -8,15 +10,82 @@ import java.util.*;
  */
 public class LibraryModel {
 	
+	private Playlist mostPlayed;
+	private Playlist recentPlayed;
 	private ArrayList<Album> albumList;
 	private ArrayList<Playlist> playlists;
 	private MusicStore store;
+	private ArrayList<Song> playedSongs;
 	
 	public LibraryModel() {
 		albumList = new ArrayList<Album>();
 		playlists = new ArrayList<Playlist>();
 		store = new MusicStore();
+		playedSongs = new ArrayList<Song>();
+		mostPlayed = new Playlist("Recent");
+		recentPlayed=new Playlist("mostListened");
+		
 	}
+	
+	public void playSong(String songTitle) {
+	    Song value = null;
+	    for (Album a: albumList) {
+	        value = a.getSong(songTitle);
+	        if (value!=null) {
+	            break;
+	        }
+	    }
+	    if (value != null) {
+	        value.playSong();
+	        playedSongs.add(value);
+	        	if (recentPlayed.getSize() >= 10) {
+	        		recentPlayed.removeFirst();
+	        }
+	        recentPlayed.addSong(value);
+	  }
+	}
+	
+	//sorting from most played to least played
+	 public void selectionSortSongs() {
+	        int size = playedSongs.size();
+
+	        for (int i = 0; i < size -1; i++) {
+	            int value = i;
+	            for (int j = i + 1; j < size; j++) {
+	                if (playedSongs.get(j).getTimesPlayed()>playedSongs.get(value).getTimesPlayed()) {
+	                    value = j;
+	                }
+	            }
+	            if (value!=i) {
+	                Song temp = playedSongs.get(i);
+	                playedSongs.set(i, playedSongs.get(value));
+	                playedSongs.set(value, temp);
+	            }
+	        }
+	    }
+
+	public Playlist getTopSongs() {
+		if(playedSongs.size()<=10) {
+			for(Song s: playedSongs) {
+				mostPlayed.addSong(s);
+			}
+			
+		}
+		else {
+	      selectionSortSongs();
+	      List<Song> topSongs = playedSongs.subList(0, 10);
+	        for(Song s: topSongs) {
+	        	mostPlayed.addSong(s);
+	        }
+		}
+		return mostPlayed;
+	}
+	
+		
+	
+				
+	
+	
 	
 	/*
 	 * Method: searchSongTitle(title)
