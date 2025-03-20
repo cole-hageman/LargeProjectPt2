@@ -12,15 +12,6 @@ public class UserInterface {
 	private UserInterface() {
 		mainApplication = new MainModel();
 	}
-	/*
-	 * Method: printSongList(songs)
-	 * Purpose: print the songs in nice format from an input arraylist
-	 */
-	private void printSongList(ArrayList<Song> songs) {
-		for (Song s : songs) {
-			System.out.println(s.toString());
-		}
-	}
 	
 	/*
 	 * Method: createAccount(username, password)
@@ -30,7 +21,7 @@ public class UserInterface {
 		if (mainApplication.createAccount(username, Password)) {
 			System.out.println("Account successfully created. You can now log in.");
 		} else {
-			System.out.println("Unable to create account. Username already taken.");
+			System.out.println("Unable to create account. Username already taken or invalid character.");
 		}
 	}
 	
@@ -55,6 +46,16 @@ public class UserInterface {
 		}
 	}
 	
+	/*
+	 * Method: printSongList(songs)
+	 * Purpose: print the songs in nice format from an input arraylist
+	 */
+	private void printSongList(ArrayList<Song> songs) {
+		for (Song s : songs) {
+			System.out.println(s.toString());
+		}
+	}
+
 	/*
 	 * Method: searchSongTitle(title)
 	 * Purpose: communicate with library to search for a song and print it.
@@ -436,6 +437,10 @@ public class UserInterface {
 		}
 	}
 	
+	/*
+	 * Method: printLoginManual()
+	 * Purpose: Print the login manual of commands for the user
+	 */
 	private void printLoginManual() {
 		System.out.println("------------------------");
 		System.out.println("   List of commands");
@@ -551,7 +556,11 @@ public class UserInterface {
 								System.out.println("Invalid arguments. Expected format: 'createAccount <username>, <password>'");
 							}
 							
+						} else {
+							System.out.println("Invalid command. Type 'manual' or 'help' for help.");
 						}
+					} else {
+						System.out.println("Invalid command. Type 'manual' or 'help' for help.");
 					}
 					
 				/*
@@ -707,6 +716,8 @@ public class UserInterface {
 								System.out.println("Invalid arguments. Expected format: 'removeFromPlaylist <playlistName>, <songName>'");
 							}
 							
+						} else {
+							System.out.println("Invalid command. Type 'manual' or 'help' for help.");
 						}
 					} else {
 						System.out.println("Invalid command. Type 'manual' or 'help' for help.");
