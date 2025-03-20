@@ -1,8 +1,5 @@
 package model;
 import java.util.*;
-import java.security.SecureRandom;
-import java.util.Base64;
-import static model.MainModel.hashPassword;
 
 import com.sun.jdi.Value;
 
@@ -20,21 +17,13 @@ public class LibraryModel {
 	private MusicStore store;
 	private ArrayList<Song> playedSongs;
 	
-	private final String PASSWORD;
-	private String finalSalt;
-	
-	public LibraryModel(String password) {
+	public LibraryModel() {
 		albumList = new ArrayList<Album>();
 		playlists = new ArrayList<Playlist>();
 		store = new MusicStore();
-		
-        finalSalt = createSalt();
-        
-        PASSWORD = hashPassword(password, finalSalt);
-    
 		playedSongs = new ArrayList<Song>();
 		mostPlayed = new Playlist("Recent");
-	  recentPlayed=new Playlist("mostListened");
+		recentPlayed=new Playlist("mostListened");
 		
 	}
 	
@@ -53,7 +42,7 @@ public class LibraryModel {
 	        		recentPlayed.removeFirst();
 	        }
 	        recentPlayed.addSong(value);
-      }
+	  }
 	}
 	
 	//sorting from most played to least played
@@ -73,7 +62,7 @@ public class LibraryModel {
 	                playedSongs.set(value, temp);
 	            }
 	        }
-  }
+	    }
 
 	public Playlist getTopSongs() {
 		if(playedSongs.size()<=10) {
@@ -90,28 +79,13 @@ public class LibraryModel {
 	        }
 		}
 		return mostPlayed;
-  }
-	/*
-	 * Method: createSalt()
-	 * Purpose: create the salt to be used on this account's password
-	 */
-	private String createSalt() {
-		SecureRandom random = new SecureRandom();
-        byte[] salt = new byte[16];
-        random.nextBytes(salt);
-        return Base64.getEncoder().encodeToString(salt);
 	}
 	
+		
 	
-	/*
-	 * Method: checkPassword()
-	 * Purpose: Compare an inputed password to the correct password
-	 */
-	public boolean checkPassword(String password) {
-		
-	  return hashPassword(password, finalSalt).equals(PASSWORD);
-		
-	}
+				
+	
+	
 	
 	/*
 	 * Method: searchSongTitle(title)
