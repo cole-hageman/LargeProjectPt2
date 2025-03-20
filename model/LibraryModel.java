@@ -1,5 +1,8 @@
 package model;
 import java.util.*;
+import java.security.SecureRandom;
+import java.util.Base64;
+import static model.MainModel.hashPassword;
 
 /*
  * Class: LibraryModel
@@ -12,10 +15,40 @@ public class LibraryModel {
 	private ArrayList<Playlist> playlists;
 	private MusicStore store;
 	
-	public LibraryModel() {
+	private final String PASSWORD;
+	private String finalSalt;
+	
+	public LibraryModel(String password) {
 		albumList = new ArrayList<Album>();
 		playlists = new ArrayList<Playlist>();
 		store = new MusicStore();
+		
+        finalSalt = createSalt();
+        
+        PASSWORD = hashPassword(password, finalSalt);
+	}
+	
+	
+	/*
+	 * Method: createSalt()
+	 * Purpose: create the salt to be used on this account's password
+	 */
+	private String createSalt() {
+		SecureRandom random = new SecureRandom();
+        byte[] salt = new byte[16];
+        random.nextBytes(salt);
+        return Base64.getEncoder().encodeToString(salt);
+	}
+	
+	
+	/*
+	 * Method: checkPassword()
+	 * Purpose: Compare an inputed password to the correct password
+	 */
+	public boolean checkPassword(String password) {
+		
+		return hashPassword(password, finalSalt).equals(PASSWORD);
+		
 	}
 	
 	/*
