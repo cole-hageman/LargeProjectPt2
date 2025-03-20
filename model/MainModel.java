@@ -82,6 +82,9 @@ public class MainModel {
 		return loggedIn;
 	}
 	
+	/*
+	 * INTENTIONAL ESCAPING REFERENCE, Discussed with Lotz and she says its fine.
+	 */
 	public LibraryModel getUserLibrary() {
 		return user;
 	}
