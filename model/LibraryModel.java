@@ -5,6 +5,7 @@ import java.security.SecureRandom;
 import java.util.Base64;
 import static model.MainModel.hashPassword;
 
+
 import com.sun.jdi.Value;
 
 /*
@@ -17,9 +18,12 @@ public class LibraryModel {
 	private Playlist mostPlayed; // TODO: move this into playlist data structure
 	private Playlist recentPlayed; // TODO: move this into playlist data structure
 	private ArrayList<Album> albumList; // TODO: convert into hashmap of hashMap(name, ArrayList<Album>) and a hashmap of hashMap(artist, ArrayList<Album>)
-	private ArrayList<Playlist> playlists; // TODO: convert into hashmap of hashMap(name, Playlist)
+	private HashMap<String, Playlist> playlists;
 	private MusicStore store;
 	private ArrayList<Song> playedSongs; 
+	
+	private HashMap<String, ArrayList<Song>> songNames;
+	private HashMap<String, ArrayList<Song>> songAuthors;
 	// TODO: create hashmap of songs hashMap(name, ArrayList<Song>) and hashmap of songs by artists hashMap(artist, ArrayList<Song>)
 
 	private final String PASSWORD;
@@ -28,7 +32,7 @@ public class LibraryModel {
 	public LibraryModel(String password) {
 		
 		albumList = new ArrayList<Album>();
-		playlists = new ArrayList<Playlist>();
+		playlists = new HashMap<String, Playlist>();
 		store = new MusicStore();
 
 		finalSalt = createSalt();
@@ -187,13 +191,10 @@ public class LibraryModel {
 	 * lists of playlists with playlistName
 	 */
 	public ArrayList<Playlist> searchPlaylist(String playlistName) {
+		
 		ArrayList<Playlist> newList = new ArrayList<Playlist>();
-
-		for (Playlist p : playlists) {
-			if (p.getName().toLowerCase().equals(playlistName.toLowerCase())) {
-				newList.add(p);
-			}
-		}
+		
+		newList.add(playlists.get(playlistName));
 
 		return newList;
 	}
@@ -259,6 +260,34 @@ public class LibraryModel {
 				}
 			}
 		}
+		
+		
+		
+		
+		/*
+		 * Add to the song collections
+		 */
+		if (songNames.containsKey(foundSong.getName())) {
+			
+			// if the song in the hashmap list isn't the same song as the found song
+			if (!songNames.get(foundSong.getName()).get(0).getAuthor().equals(foundSong.getAuthor())) {
+				songNames.get(foundSong.getName()).add(foundSong);
+			} 
+		} else {
+			ArrayList<Song> newList = new ArrayList<Song>();
+			newList.add(foundSong);
+			songNames.put(foundSong.getName(), newList);
+		}
+		
+		if (songAuthors.containsKey(foundSong.getAuthor())) {
+			if (!songAuthors.get(foundSong.getAuthor()).get(0).getName().equals(foundSong.getName())) {
+				songAuthors.get(foundSong.getAuthor()).add(foundSong);
+			} 
+		} else {
+			ArrayList<Song> newList = new ArrayList<Song>();
+			newList.add(foundSong);
+			songAuthors.put(foundSong.getAuthor(), newList);
+		}
 
 		return false;
 	}
@@ -306,8 +335,8 @@ public class LibraryModel {
 
 		ArrayList<String> songs = new ArrayList<String>();
 
-		for (Album a : albumList) {
-			for (Song s : a.getSongs()) {
+		for (ArrayList<Song> list : songNames.values()) {
+			for (Song s : list) {
 				songs.add(s.getName());
 			}
 		}
@@ -354,7 +383,7 @@ public class LibraryModel {
 
 		ArrayList<String> playlistNames = new ArrayList<String>();
 
-		for (Playlist p : playlists) {
+		for (Playlist p : playlists.values()) {
 			playlistNames.add(p.getName());
 		}
 
@@ -368,11 +397,10 @@ public class LibraryModel {
 
 		ArrayList<String> songs = new ArrayList<String>();
 
-		for (Playlist p : playlists) {
-			if (p.getName().toLowerCase().equals(title.toLowerCase())) {
-				for (Song s : p.getSongs()) {
-					songs.add(s.getName());
-				}
+		Playlist p = playlists.get(title);
+		if (p != null) {
+			for (Song s : p.getSongs()) {
+				songs.add(s.getName());
 			}
 		}
 
@@ -402,13 +430,11 @@ public class LibraryModel {
 	 */
 	public boolean createPlaylist(String name) {
 
-		for (Playlist p : playlists) {
-			if (p.getName().toLowerCase().equals(name.toLowerCase())) {
-				return false;
-			}
+		if (playlists.containsKey(name)) {
+			return false;
 		}
 
-		playlists.add(new Playlist(name));
+		playlists.put(name, new Playlist(name));
 		return true;
 	}
 
@@ -416,13 +442,7 @@ public class LibraryModel {
 	 * Method: removePlaylist(name) Purpose: removes a playlist with name
 	 */
 	public boolean removePlaylist(String name) {
-		for (Playlist p : playlists) {
-			if (p.getName().toLowerCase().equals(name.toLowerCase())) {
-				playlists.remove(p);
-				return true;
-			}
-		}
-		return false;
+		return playlists.remove(name) != null;
 	}
 
 	/*
@@ -431,12 +451,7 @@ public class LibraryModel {
 	public boolean addToPlaylist(String playlist, String name, String artist) {
 		ArrayList<Song> foundSongs = this.searchSongTitle(name);
 
-		Playlist foundList = null;
-		for (Playlist p : playlists) {
-			if (p.getName().toLowerCase().equals(playlist.toLowerCase())) {
-				foundList = p;
-			}
-		}
+		Playlist foundList = playlists.get(playlist);
 
 		if (foundList != null) {
 			if (foundSongs.size() > 0) {
@@ -457,10 +472,10 @@ public class LibraryModel {
 	 */
 	public boolean removeFromPlaylist(String playlist, String name) {
 
-		for (Playlist p : playlists) {
-			if (p.getName().toLowerCase().equals(playlist.toLowerCase())) {
-				return p.removeSong(name);
-			}
+		Playlist foundList = playlists.get(playlist);
+		
+		if (foundList != null) {
+			return foundList.removeSong(name);
 		}
 
 		return false;
