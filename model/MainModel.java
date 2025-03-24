@@ -3,6 +3,9 @@ import java.util.*;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 import java.util.Base64;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.PrintWriter;
 
 public class MainModel {
 
@@ -14,13 +17,22 @@ public class MainModel {
 	
 	public MainModel() {
 		
-		/*
-		 * TODO: Read from usernames and passwords file and store into hashtable
-		 * as well as populate users
-		 */
 		userDatabase = new HashMap<String, LibraryModel>();
 		
 		loggedIn = false;
+		
+        try (Scanner scanner = new Scanner(new File("src/data.txt"))) {
+            while (scanner.hasNextLine()) {
+                String line = scanner.nextLine();
+                String[] parts = line.split(",");
+                LibraryModel user = new LibraryModel(parts[1].trim());
+                if (parts.length == 2) {
+                    userDatabase.put(parts[0].trim(), user);
+                }
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("data.txt not found");
+        }
 	}
 	
 	public static String hashPassword(String password, String salt) {
@@ -91,9 +103,13 @@ public class MainModel {
 	
 	public boolean saveDatabase() {
 		
-		/*
-		 * TODO: write usernames and passwords to file
-		 */
+        try (PrintWriter writer = new PrintWriter(new File("src/data.txt"))) {
+            for (var user : userDatabase.entrySet()) {
+                writer.println(user.getKey() + "," + user.getValue().getHashedPw());
+            }
+        } catch (FileNotFoundException e) {
+            System.out.println("data.txt writing to file");
+        }
 		
 		return false;
 	}
