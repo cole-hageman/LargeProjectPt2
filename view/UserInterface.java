@@ -60,32 +60,36 @@ public class UserInterface {
 	 * Method: searchSongTitle(title)
 	 * Purpose: communicate with library to search for a song and print it.
 	 */
-	private void searchSongTitle(String title) {
+	private Song searchSongTitle(String title) {
 		
 		ArrayList<Song> foundSongs = userLib.searchSongTitle(title);
 		
 		if (foundSongs.size() == 0) {
 			System.out.println("Song not found in user's library.");
-			return;
+			return null;
 		}
 		
 		printSongList(foundSongs);
+		System.out.println("\nUse 'printAlbumInfo' to show the information about this song's album.\n");
+		return foundSongs.get(0);
 	}
 	
 	/*
 	 * Method: searchSongArtist(artist)
 	 * Purpose: communicate with library to search for a song and print it.
 	 */
-	private void searchSongArtist(String artist) {
+	private Song searchSongArtist(String artist) {
 		
 		ArrayList<Song> foundSongs = userLib.searchSongArtist(artist);
 		
 		if (foundSongs.size() == 0) {
 			System.out.println("Artist not found in user's library.");
-			return;
+			return null;
 		}
 		
 		printSongList(foundSongs);
+		System.out.println("\nUse 'printAlbumInfo' to show the information about this song's album.\n");
+		return foundSongs.get(0);
 	}
 	
 	/*
@@ -96,6 +100,16 @@ public class UserInterface {
 		for (Album a : albums) {
 			System.out.println(a.toString());
 		}
+	}
+	
+	/*
+	 * 
+	 */
+	private void getAlbumInfoFromSong(String songName, String artistName) {
+		Album foundAlbum = userLib.getAlbumFromStore(songName, artistName);
+		
+		System.out.println("-----------------\n   Album Info\n-----------------");
+		System.out.println(foundAlbum.toString());
 	}
 	
 	/*
@@ -498,6 +512,8 @@ public class UserInterface {
 		
 		System.out.println("Welcome to your music library. Type 'manual' or 'help' for a list of commands. Type 'quit' to exit.");
 		
+		Song songSearched = null;
+		
 		while (input.hasNextLine()) {
 			String userInput = input.nextLine();
 			String[] commandArgs = userInput.split("\\s+", 2);
@@ -598,16 +614,20 @@ public class UserInterface {
 					} else if (commandArgs[0].equals("printFavorites")) {
 						this.printFavoriteSongs();
 						
+					} else if (commandArgs[0].equals("printAlbumInfo") && songSearched != null) {
+						this.getAlbumInfoFromSong(songSearched.getName(), songSearched.getAuthor());
+						songSearched = null;
+						
 					} else if (commandArgs.length > 1) {
 						
 						userInput = commandArgs[1].strip();
 						// FIND SONG TITLE
 						if (commandArgs[0].equals("findSongTitle")) {
-							this.searchSongTitle(userInput);
+							songSearched = this.searchSongTitle(userInput);
 						
 						// FIND SONG ARTIST
 						} else if (commandArgs[0].equals("findSongArtist")) {
-							this.searchSongArtist(userInput);
+							songSearched = this.searchSongArtist(userInput);
 							
 						// FIND ALBUM TITLE
 						} else if (commandArgs[0].equals("findAlbumTitle")) {
@@ -727,6 +747,7 @@ public class UserInterface {
 		}
 		
 		System.out.println("Exiting your music library.");
+		mainApplication.saveDatabase();
 		input.close();
 		System.exit(0);
 	}
