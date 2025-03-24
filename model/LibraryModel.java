@@ -233,6 +233,29 @@ public class LibraryModel {
 		
 		return sortAlhabetically(foundSongs);
 	}
+	
+	public ArrayList<Song> searchGenre(String genre) {
+		ArrayList<Song> foundSongs = new ArrayList<Song>();
+		for (ArrayList<Song> list : songNames.values()) {
+			for (Song s : list) {
+				if (s.getGenre().equals((genre))) {
+					foundSongs.add(s);
+				}
+			}
+		}
+		
+		return foundSongs;
+	}
+	
+	public ArrayList<Song> shuffle(){
+		ArrayList<Song>allSongs=new ArrayList<Song>();
+		for(ArrayList<Song> ArraySong:songNames.values()) {
+			allSongs.addAll(ArraySong);
+		}
+		Collections.shuffle(allSongs);
+		return allSongs;
+		
+	}
 
 	/*
 	 * Method: searchAlbumTitle(albumName) Purpose: search for an album by name and
@@ -437,6 +460,8 @@ public class LibraryModel {
 
 		return true;
 	}
+	
+	
 
 	/*
 	 * Method: getSongTitles() Purpose: print to the user a list of song titles
