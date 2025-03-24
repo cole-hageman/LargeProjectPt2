@@ -100,7 +100,7 @@ public class MusicStore {
 		int year=Integer.parseInt(attributes[3]);
 		Album current=new Album(Artist,albumTitle,year,genre);
 		while(scan.hasNextLine()) {
-			current.addSong(new Song(scan.nextLine().trim(),Artist,albumTitle));
+			current.addSong(new Song(scan.nextLine().trim(),Artist,albumTitle,genre));
 		}
 		
 		albums.add(current);

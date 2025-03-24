@@ -61,7 +61,7 @@ public class Album {
 			return null;
 		}
 		
-		Song newSong = new Song(current.getName(),current.getAuthor(),current.getAlbum());
+		Song newSong = new Song(current.getName(),current.getAuthor(),current.getAlbum(),current.getGenre());
 		newSong.setFavorite(current.isFavorite());
 		newSong.setRating(current.getRating());
 		return newSong;
@@ -89,7 +89,7 @@ public class Album {
 	public ArrayList<Song> getSongs(){
 		ArrayList<Song>curr=new ArrayList<Song>();
 		for(Song s: songsCollection) {
-			Song newSong=new Song(s.getName(),s.getAuthor(),s.getAlbum());
+			Song newSong=new Song(s.getName(),s.getAuthor(),s.getAlbum(),s.getGenre());
 			newSong.setFavorite(s.isFavorite());
 			newSong.setRating(s.getRating());
 			curr.add(newSong);

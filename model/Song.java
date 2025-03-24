@@ -4,18 +4,24 @@ public class Song {
 	private String songName;
 	private String authorName;
 	private String album;
+	private String genre;
 	private int rating;
 	private boolean favorite;
 	private int timesPlayed;
 
-	public Song(String songName,String authorName,String album) {
+	public Song(String songName,String authorName,String album,String Genre) {
 		this.album=album;
 		this.authorName=authorName;
 		this.songName = songName;
 		this.rating = 0;
 		this.favorite=false;
 		this.timesPlayed=0;
+		this.genre=Genre;
 		
+	}
+	
+	public String getGenre() {
+		return genre;
 	}
 	
 	public int getTimesPlayed() {

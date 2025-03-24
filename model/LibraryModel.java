@@ -15,8 +15,7 @@ import com.sun.jdi.Value;
  */
 public class LibraryModel {
 
-	private Playlist mostPlayed; // TODO: move this into playlist data structure
-	private Playlist recentPlayed; // TODO: move this into playlist data structure
+
 	private HashMap<String, ArrayList<Album>> albumList;
 	private HashMap<String, Playlist> playlists;
 	private MusicStore store;
@@ -33,15 +32,39 @@ public class LibraryModel {
 		songNames = new HashMap<String, ArrayList<Song>>();
 		playlists = new HashMap<String, Playlist>();
 		store = new MusicStore();
-
 		finalSalt = createSalt();
-
 		PASSWORD = hashPassword(password, finalSalt);
-
 		playedSongs = new ArrayList<Song>();
-		mostPlayed = new Playlist("Recent");
-		recentPlayed = new Playlist("mostListened");
+		playlists.put("Recent", new Playlist("Recent"));
+		playlists.put("MostListened",new Playlist("mostListened"));
+		playlists.put("FavoriteSongs",new Playlist("Favorite"));
+		playlists.put("FavoriteSongs",new Playlist("TopRated"));
 
+	}
+	
+	public void favoritePlaylist() {
+		Playlist fav=playlists.get("Favorite");
+		for(ArrayList<Song> arraySongs: songNames.values()) {
+			for(Song s: arraySongs) {
+				if(s.getRating()==5 || s.isFavorite()) {
+					fav.addSong(s);
+				}
+			}
+		}
+	}
+		
+	public void TopRated() {
+			Playlist fav=playlists.get("TopRated");
+			for(ArrayList<Song> arraySongs: songNames.values()) {
+				for(Song s: arraySongs) {
+					if(s.getRating()==5 || s.getRating()==4) {
+						fav.addSong(s);
+					}
+				}
+			}
+		
+		
+		
 	}
 
 	public boolean playSong(String songTitle, String artist) {
@@ -58,22 +81,55 @@ public class LibraryModel {
 		if (value != null) {
 			value.playSong();
 			playedSongs.add(value);
-			if (recentPlayed.getSize() >= 10) {
-				recentPlayed.removeFirst();
+			Playlist recent = playlists.get("Recent");
+			if (recent.getSize() >= 10) {
+			    recent.removeFirst();
 			}
-			recentPlayed.addSong(value);
+			recent.addSong(value);
+
 			return true;
 		}
 		
 		return false;
 	}
+	
+	
+	
+	public ArrayList<Song> getSongsSortedByRating() {
+	    ArrayList<Song> allSongs = new ArrayList<>();
+	    for (ArrayList<Song> songlist : songNames.values()) {
+	        allSongs.addAll(songlist);
+	    }
 
-	// sorting from most played to least played
+	    //selection sort
+	    int size = allSongs.size();
+		for (int i = 0; i < size-1; i++) {
+			int value =i;
+			for (int j = i + 1; j < size; j++) {
+				if (allSongs.get(j).getRating() > allSongs.get(value).getRating()) {
+					value = j;
+				}
+			}
+			if (value!= i) {
+				Song current =allSongs.get(i);
+				allSongs.set(value, current);
+				allSongs.set(i, allSongs.get(value));
+				
+			}
+	}
+		return allSongs;
+	    
+ 
+	}
+	
+	
+
+
 	public void selectionSortSongs() {
 		int size = playedSongs.size();
 
 		for (int i = 0; i < size - 1; i++) {
-			int value = i;
+			int value =i;
 			for (int j = i + 1; j < size; j++) {
 				if (playedSongs.get(j).getTimesPlayed() > playedSongs.get(value).getTimesPlayed()) {
 					value = j;
@@ -87,7 +143,8 @@ public class LibraryModel {
 		}
 	}
 
-	public Playlist getTopSongs() {
+	public void makeTopTen() {
+		Playlist mostPlayed=playlists.get("mostListened");
 		if (playedSongs.size() <= 10) {
 			for (Song s : playedSongs) {
 				mostPlayed.addSong(s);
@@ -100,9 +157,13 @@ public class LibraryModel {
 				mostPlayed.addSong(s);
 			}
 		}
-		return mostPlayed;
+
 	}
 
+	/*
+	 * Method: createSalt() Purpose: create the salt to be used on this account's
+	 * password
+	 */
 	/*
 	 * Method: createSalt() Purpose: create the salt to be used on this account's
 	 * password
@@ -129,14 +190,37 @@ public class LibraryModel {
 	 * a list of found songs
 	 */
 	public ArrayList<Song> searchSongTitle(String title) {
+		ArrayList<Song> current=songNames.get(title);
+		return sortAlphabetically(current);
 
-		return songNames.get(title);
 	}
 
 	/*
 	 * Method: searchSongArtist(artist) Purpose: search for a song by artist and
 	 * return a list of found songs
 	 */
+	
+	public ArrayList<Song> sortAlphabetically( ArrayList<Song> songs){
+		ArrayList<String> sorted=new ArrayList<String>();
+		for(Song r: songs) {
+			sorted.add(r.getName());
+			
+		}
+		Collections.sort(sorted); 
+		ArrayList<Song> sortedSongs = new ArrayList<Song>();
+		for (String name : sorted) {
+			for (Song s : songs) {
+				if (s.getName().equals(name)) {
+					sortedSongs.add(s);
+					break; 
+				}
+			}
+		}
+		return sortedSongs;
+		
+		
+	}
+	
 	public ArrayList<Song> searchSongArtist(String artist) {
 
 		ArrayList<Song> foundSongs = new ArrayList<Song>();
@@ -148,8 +232,32 @@ public class LibraryModel {
 			}
 		}
 
+		return sortAlphabetically(foundSongs);
+	}
+	
+	public ArrayList<Song> searchGenre(String genre) {
+		ArrayList<Song> foundSongs = new ArrayList<Song>();
+		for (ArrayList<Song> list : songNames.values()) {
+			for (Song s : list) {
+				if (s.getGenre().equals((genre))) {
+					foundSongs.add(s);
+				}
+			}
+		}
+		
 		return foundSongs;
 	}
+	
+	public ArrayList<Song> shuffle(){
+		ArrayList<Song>allSongs=new ArrayList<Song>();
+		for(ArrayList<Song> ArraySong:songNames.values()) {
+			allSongs.addAll(ArraySong);
+		}
+		Collections.shuffle(allSongs);
+		return allSongs;
+		
+	}
+
 
 	/*
 	 * Method: searchAlbumTitle(albumName) Purpose: search for an album by name and
@@ -247,6 +355,22 @@ public class LibraryModel {
 
 		Song foundSong = foundSongs.get(0);
 		Album albumToAddTo = existingAlbumMatchesAuthor(foundSong);
+		
+		if(playlists.get(foundSong.getGenre())==null) {
+			int count=0;
+			for(ArrayList<Song> songs: songNames.values()) {
+				for(Song s:songs) {
+					if(s.getGenre().equals(foundSong.getGenre())){
+						count+=1;
+					}
+				}
+			}
+			if(count>=10) {
+				playlists.put(foundSong.getGenre(),new Playlist(foundSong.getGenre()));
+				Playlist current=playlists.get(foundSong.getGenre());
+				current.addSong(foundSong);
+			}
+		}
 
 		// If the album isn't in our library, we make it
 		if (!albumList.containsKey(foundSong.getAlbum())) {
@@ -270,6 +394,7 @@ public class LibraryModel {
 		}
 
 		albumToAddTo.addSong(foundSong);
+		
 		
 		/*
 		 * Add to the song collections
