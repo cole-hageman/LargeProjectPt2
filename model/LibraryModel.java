@@ -277,18 +277,19 @@ public class LibraryModel {
 		if (songNames.containsKey(foundSong.getName())) {
 			
 			// if the song in the hashmap list isn't the same song as the found song
-			if (!songNames.get(foundSong.getName()).get(0).getAuthor().equals(foundSong.getAuthor())) {
-				songNames.get(foundSong.getName()).add(foundSong);
-				return true;
-			} 
+			for (Song s : songNames.get(foundSong.getName())) {
+				if (s.getAuthor().equals(foundSong.getAuthor())) {
+					return false;
+				}
+			}
+			songNames.get(foundSong.getName()).add(foundSong);
+			return true;
 		} else {
 			ArrayList<Song> newList = new ArrayList<Song>();
 			newList.add(foundSong);
 			songNames.put(foundSong.getName(), newList);
 			return true;
 		}
-
-		return false;
 	}
 
 	/*
