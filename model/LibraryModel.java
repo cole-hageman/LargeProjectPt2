@@ -17,21 +17,20 @@ public class LibraryModel {
 
 	private Playlist mostPlayed; // TODO: move this into playlist data structure
 	private Playlist recentPlayed; // TODO: move this into playlist data structure
-	private ArrayList<Album> albumList; // TODO: convert into hashmap of hashMap(name, ArrayList<Album>) and a hashmap of hashMap(artist, ArrayList<Album>)
+	private HashMap<String, ArrayList<Album>> albumList;
 	private HashMap<String, Playlist> playlists;
 	private MusicStore store;
 	private ArrayList<Song> playedSongs; 
 	
 	private HashMap<String, ArrayList<Song>> songNames;
-	private HashMap<String, ArrayList<Song>> songAuthors;
-	// TODO: create hashmap of songs hashMap(name, ArrayList<Song>) and hashmap of songs by artists hashMap(artist, ArrayList<Song>)
 
 	private final String PASSWORD;
 	private String finalSalt;
 
 	public LibraryModel(String password) {
 		
-		albumList = new ArrayList<Album>();
+		albumList = new HashMap<String, ArrayList<Album>>();
+		songNames = new HashMap<String, ArrayList<Song>>();
 		playlists = new HashMap<String, Playlist>();
 		store = new MusicStore();
 
@@ -45,14 +44,17 @@ public class LibraryModel {
 
 	}
 
-	public void playSong(String songTitle) {
+	public boolean playSong(String songTitle, String artist) {
+		ArrayList<Song> foundSongs = songNames.get(songTitle);
+		
 		Song value = null;
-		for (Album a : albumList) {
-			value = a.getSong(songTitle);
-			if (value != null) {
-				break;
+		
+		for (Song s : foundSongs) {
+			if (s.getAuthor().toLowerCase().equals(artist.toLowerCase())) {
+				value = s;
 			}
 		}
+		
 		if (value != null) {
 			value.playSong();
 			playedSongs.add(value);
@@ -60,7 +62,10 @@ public class LibraryModel {
 				recentPlayed.removeFirst();
 			}
 			recentPlayed.addSong(value);
+			return true;
 		}
+		
+		return false;
 	}
 
 	// sorting from most played to least played
@@ -125,15 +130,7 @@ public class LibraryModel {
 	 */
 	public ArrayList<Song> searchSongTitle(String title) {
 
-		ArrayList<Song> foundSongs = new ArrayList<Song>();
-		for (Album a : albumList) {
-			Song songSearch = a.getSong(title);
-			if (songSearch != null) {
-				foundSongs.add(songSearch);
-			}
-		}
-
-		return foundSongs;
+		return songNames.get(title);
 	}
 
 	/*
@@ -143,9 +140,9 @@ public class LibraryModel {
 	public ArrayList<Song> searchSongArtist(String artist) {
 
 		ArrayList<Song> foundSongs = new ArrayList<Song>();
-		for (Album a : albumList) {
-			if (a.getAuthorName().toLowerCase().equals(artist.toLowerCase())) {
-				for (Song s : a.getSongs()) {
+		for (ArrayList<Song> list : songNames.values()) {
+			for (Song s : list) {
+				if (s.getAuthor().equals(artist)) {
 					foundSongs.add(s);
 				}
 			}
@@ -160,14 +157,7 @@ public class LibraryModel {
 	 */
 	public ArrayList<Album> searchAlbumTitle(String albumName) {
 
-		ArrayList<Album> foundAlbums = new ArrayList<Album>();
-		for (Album a : albumList) {
-			if (a.getAlbumName().toLowerCase().equals(albumName.toLowerCase())) {
-				foundAlbums.add(a);
-			}
-		}
-
-		return foundAlbums;
+		return albumList.get(albumName);
 	}
 
 	/*
@@ -177,9 +167,11 @@ public class LibraryModel {
 	public ArrayList<Album> searchAlbumArtist(String artistName) {
 
 		ArrayList<Album> foundAlbums = new ArrayList<Album>();
-		for (Album a : albumList) {
-			if (a.getAuthorName().toLowerCase().equals(artistName.toLowerCase())) {
-				foundAlbums.add(a);
+		for (ArrayList<Album> list : albumList.values()) {
+			for (Album a : list) {
+				if (a.getAuthorName().toLowerCase().equals(artistName.toLowerCase())) {
+					foundAlbums.add(a);
+				}
 			}
 		}
 
@@ -205,13 +197,8 @@ public class LibraryModel {
 	 */
 	private boolean hasAlbum(String title) {
 
-		for (Album a : albumList) {
-			if (a.getAlbumName().toLowerCase().equals(title.toLowerCase())) {
-				return true;
-			}
-		}
+		return albumList.containsKey(title);
 
-		return false;
 	}
 
 	/*
@@ -229,6 +216,23 @@ public class LibraryModel {
 		return false;
 	}
 
+	
+	private Album existingAlbumMatchesAuthor(Song foundSong) {
+		ArrayList<Album> existingAlbums = albumList.get(foundSong.getAlbum());
+		
+		if (existingAlbums == null) {
+			return null;
+		}
+		
+		for (Album a : existingAlbums) {
+			if (a.getAuthorName().equals(foundSong.getAuthor())) {
+				return a;
+			}
+		}
+		
+		return null;
+	}
+	
 	/*
 	 * Method: addSong(title) Purpose: add a song to the user library into the
 	 * appropriate album, make the album if there isn't one already
@@ -242,27 +246,30 @@ public class LibraryModel {
 		}
 
 		Song foundSong = foundSongs.get(0);
+		Album albumToAddTo = existingAlbumMatchesAuthor(foundSong);
 
 		// If the album isn't in our library, we make it
-		if (!hasAlbum(foundSong.getAlbum())) {
+		if (!albumList.containsKey(foundSong.getAlbum())) {
 			for (Album a : store.getAlbums()) {
 				if (a.getAlbumName().equals(foundSong.getAlbum())) {
-					albumList.add(new Album(a.getAuthorName(), a.getAlbumName(), a.getYear(), a.getGenre()));
+					Album newAlbum = new Album(a.getAuthorName(), a.getAlbumName(), a.getYear(), a.getGenre());
+					ArrayList<Album> newList = new ArrayList<Album>();
+					newList.add(newAlbum);
+					albumList.put(foundSong.getAlbum(), newList);
+					albumToAddTo = newAlbum;
+				}
+			}
+		} else if (albumToAddTo == null){
+			for (Album a : store.getAlbums()) {
+				if (a.getAlbumName().equals(foundSong.getAlbum())) {
+					Album newAlbum = new Album(a.getAuthorName(), a.getAlbumName(), a.getYear(), a.getGenre());
+					albumList.get(foundSong.getAlbum()).add(newAlbum);
+					albumToAddTo = newAlbum;
 				}
 			}
 		}
 
-		for (Album a : albumList) {
-			if (a.getAlbumName().equals(foundSong.getAlbum())) {
-				if (!hasSong(a, foundSong.getName())) {
-					a.addSong(foundSong);
-					return true;
-				}
-			}
-		}
-		
-		
-		
+		albumToAddTo.addSong(foundSong);
 		
 		/*
 		 * Add to the song collections
@@ -277,16 +284,6 @@ public class LibraryModel {
 			ArrayList<Song> newList = new ArrayList<Song>();
 			newList.add(foundSong);
 			songNames.put(foundSong.getName(), newList);
-		}
-		
-		if (songAuthors.containsKey(foundSong.getAuthor())) {
-			if (!songAuthors.get(foundSong.getAuthor()).get(0).getName().equals(foundSong.getName())) {
-				songAuthors.get(foundSong.getAuthor()).add(foundSong);
-			} 
-		} else {
-			ArrayList<Song> newList = new ArrayList<Song>();
-			newList.add(foundSong);
-			songAuthors.put(foundSong.getAuthor(), newList);
 		}
 
 		return false;
@@ -306,20 +303,25 @@ public class LibraryModel {
 
 		Album foundAlbum = foundAlbums.get(0);
 
-		for (Album a : albumList) {
-			if (a.getAlbumName().equals(foundAlbum.getAlbumName())) {
-				for (Song s : foundAlbum.getSongs()) {
-					if (!hasSong(a, s.getName())) {
-						a.addSong(s);
+		if (albumList.containsKey(title)) {
+			for (Album a : albumList.get(title)) {
+				if (a.getAuthorName().equals(foundAlbum.getAuthorName())) {
+					for (Song s : foundAlbum.getSongs()) {
+						if (!hasSong(a, s.getName())) {
+							a.addSong(s);
+						}
 					}
+					return true;
 				}
-				return true;
 			}
 		}
 
+
 		Album newAlbum = new Album(foundAlbum.getAuthorName(), foundAlbum.getAlbumName(), foundAlbum.getYear(),
 				foundAlbum.getGenre());
-		albumList.add(newAlbum);
+		ArrayList<Album> newList = new ArrayList<Album>();
+		newList.add(newAlbum);
+		albumList.put(newAlbum.getAuthorName(), newList);
 
 		for (Song s : foundAlbum.getSongs()) {
 			newAlbum.addSong(s);
@@ -350,9 +352,11 @@ public class LibraryModel {
 	public ArrayList<String> getArtists() {
 		ArrayList<String> printedArtists = new ArrayList<String>();
 
-		for (Album a : albumList) {
-			if (!printedArtists.contains(a.getAuthorName())) {
-				printedArtists.add(a.getAuthorName());
+		for (ArrayList<Album> list : albumList.values()) {
+			for (Album a : list) {
+				if (!printedArtists.contains(a.getAuthorName())) {
+					printedArtists.add(a.getAuthorName());
+				}
 			}
 		}
 
@@ -366,10 +370,12 @@ public class LibraryModel {
 
 		ArrayList<Album> newList = new ArrayList<Album>();
 
-		for (Album a : albumList) {
-			newList.add(new Album(a.getAuthorName(), a.getAlbumName(), a.getYear(), a.getGenre()));
-			for (Song s : a.getSongs()) {
-				a.addSong(s);
+		for (ArrayList<Album> list : albumList.values()) {
+			for (Album a : list) {
+				newList.add(new Album(a.getAuthorName(), a.getAlbumName(), a.getYear(), a.getGenre()));
+				for (Song s : a.getSongs()) {
+					a.addSong(s);
+				}
 			}
 		}
 
@@ -414,8 +420,8 @@ public class LibraryModel {
 
 		ArrayList<String> favSongs = new ArrayList<String>();
 
-		for (Album a : albumList) {
-			for (Song s : a.getSongs()) {
+		for (ArrayList<Song> list : songNames.values()) {
+			for (Song s : list) {
 				if (s.isFavorite()) {
 					favSongs.add(s.getName());
 				}
@@ -487,10 +493,11 @@ public class LibraryModel {
 	 */
 	public boolean rateSong(String songName, String artist, int rating) {
 
-		for (Album a : albumList) {
-			if (a.getSong(songName) != null) {
-				if (a.getSong(songName).getAuthor().toLowerCase().equals(artist.toLowerCase())) {
-					return a.rateSong(songName, rating);
+		if (songNames.containsKey(songName)) {
+			for (Song s : songNames.get(songName)) {
+				if (s.getAuthor().equals(artist)) {
+					s.setRating(rating);
+					return true;
 				}
 			}
 		}
@@ -504,10 +511,11 @@ public class LibraryModel {
 	 */
 	public boolean setFavorite(String songName, String artist, boolean favorite) {
 
-		for (Album a : albumList) {
-			if (a.getSong(songName) != null) {
-				if (a.getSong(songName).getAuthor().toLowerCase().equals(artist.toLowerCase())) {
-					return a.setFavorite(songName, favorite);
+		if (songNames.containsKey(songName)) {
+			for (Song s : songNames.get(songName)) {
+				if (s.getAuthor().equals(artist)) {
+					s.setFavorite(favorite);
+					return true;
 				}
 			}
 		}

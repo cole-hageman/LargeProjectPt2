@@ -8,7 +8,7 @@ public class Album {
 	private String albumName;
 	private final int year;
 	private String genre;
-	private HashMap<String,Song> songsCollection;
+	private ArrayList<Song> songsCollection;
 
 
 	public Album(String authorName, String albumName,int year,String genre) {
@@ -17,14 +17,14 @@ public class Album {
 		this.albumName = albumName;
 		this.year=year;
 		
-		songsCollection = new HashMap<String,Song>();
+		songsCollection = new ArrayList<Song>();
 
 	}
 	
 	
   
 	public void addSong(Song song) {
-		songsCollection.put(song.getName(),song);
+		songsCollection.add(song);
 
 	}
 
@@ -37,8 +37,8 @@ public class Album {
 		String message = "";
 		message += "Album : '" + albumName + "' by '"+ authorName+ "', Genre '"+genre+
 				"'. From the year : "+ year+"\n" ;
-		for (String song : songsCollection.keySet()) {
-			message += song + "\n";
+		for (Song s : songsCollection) {
+			message += s.getName() + "\n";
 		}
 		return message;
 
@@ -51,15 +51,20 @@ public class Album {
 	 */
 
 	public Song getSong(String songName) {
-		Song current= songsCollection.get(songName);
+		Song current= null;
+		for (Song s : songsCollection) {
+			if (s.getName().toLowerCase().equals(songName.toLowerCase())) {
+				current = s;
+			}
+		}
+		if (current == null) {
+			return null;
+		}
+		
 		Song newSong = new Song(current.getName(),current.getAuthor(),current.getAlbum());
 		newSong.setFavorite(current.isFavorite());
 		newSong.setRating(current.getRating());
 		return newSong;
-
-		
-		
-
 	}
 	
 	public String getAlbumName() {
@@ -83,7 +88,7 @@ public class Album {
 	 */
 	public ArrayList<Song> getSongs(){
 		ArrayList<Song>curr=new ArrayList<Song>();
-		for(Song s: songsCollection.values()) {
+		for(Song s: songsCollection) {
 			Song newSong=new Song(s.getName(),s.getAuthor(),s.getAlbum());
 			newSong.setFavorite(s.isFavorite());
 			newSong.setRating(s.getRating());
@@ -99,17 +104,14 @@ public class Album {
 	 */
 	
 	public boolean setFavorite(String songName, boolean favorite) {
-		if(songsCollection.get(songName)==null) {
-			return false;
+		for (Song s : songsCollection) {
+			if (s.getName().equals(songName)) {
+				s.setFavorite(favorite);
+				return true;
+			}
+
 		}
-		else {
-			Song current=songsCollection.get(songName);
-			current.setFavorite(favorite);
-			return true;
-			
-		}
-		
-		
+		return false;	
 	}
 	
 	/*
@@ -119,16 +121,14 @@ public class Album {
 	 */
 	
 	public boolean rateSong(String songName, int rating) {
-		if(songsCollection.get(songName)==null) return false;
-		else {
-			Song current=songsCollection.get(songName);
-			current.setRating(rating);
-			return true;
-			
-			
+		for (Song s : songsCollection) {
+			if (s.getName().equals(songName)) {
+				s.setRating(rating);
+				return true;
+			}
+
 		}
-		
-		
+		return false;	
 	}
 	
 	@Override
