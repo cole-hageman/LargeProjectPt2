@@ -55,4 +55,9 @@ public class Playlist {
 	
 		
 	}
+	
+	public void shuffle() {
+	Collections.shuffle(songs);
+	
+	}
 }
