@@ -36,10 +36,10 @@ public class LibraryModel {
 
 		playedSongs = new ArrayList<Song>();
 
-		playlists.put("Recent", new Playlist("recent"));
-		playlists.put("MostListened", new Playlist("mostlistened"));
-		playlists.put("FavoriteSongs", new Playlist("Favorite"));
-		playlists.put("FavoriteSongs", new Playlist("TopRated"));
+		playlists.put("Recent", new Playlist("Recent"));
+		playlists.put("Most Listened", new Playlist("Most Listened"));
+		playlists.put("Favorite", new Playlist("Favorite"));
+		playlists.put("Top Rated", new Playlist("Top Rated"));
 
 	}
 
@@ -47,42 +47,18 @@ public class LibraryModel {
 		return PASSWORD;
 	}
 
-	public void favoritePlaylist() {
-		Playlist fav = playlists.get("Favorite");
-		for (ArrayList<Song> arraySongs : songNames.values()) {
-			for (Song s : arraySongs) {
-				if (s.getRating() == 5 || s.isFavorite()) {
-					fav.addSong(s);
-				}
-			}
-		}
-	}
-
-	public void TopRated() {
-		Playlist fav = playlists.get("TopRated");
-		for (ArrayList<Song> arraySongs : songNames.values()) {
-			for (Song s : arraySongs) {
-				if (s.getRating() == 5 || s.getRating() == 4) {
-					fav.addSong(s);
-				}
-			}
-		}
-
-	}
-	
-	public void getPlaylist(String name) {
-		Playlist a=playlists.get(name);
-		System.out.print(a);
-		
-	}
-
 	public boolean playSong(String songTitle, String artist) {
+		
+		if (!songNames.containsKey(songTitle)) {
+			return false;
+		}
+		
 		ArrayList<Song> foundSongs = songNames.get(songTitle);
 
 		Song value = null;
 
 		for (Song s : foundSongs) {
-			if (s.getAuthor().toLowerCase().equals(artist.toLowerCase())) {
+			if (s.getAuthor().equals(artist)) {
 				value = s;
 			}
 		}
@@ -95,7 +71,7 @@ public class LibraryModel {
 				recent.removeFirst();
 			}
 			recent.addSong(value);
-
+			makeTopTen();
 			return true;
 		}
 
@@ -112,7 +88,6 @@ public class LibraryModel {
 		
 		for (Song s : songs) {
 			if (s.getName().equals(title) && s.getAuthor().equals(author)) {
-				System.out.print("remove song is fine");
 				songs.remove(s);
 				break;
 			}
@@ -123,10 +98,7 @@ public class LibraryModel {
 		}
 		
 		for (Playlist p : playlists.values()) {
-			if (p.removeSong(title)) {
-				System.out.print("it works");
-			}
-
+			p.removeSong(title);
 		}
 		
 		for (ArrayList<Album> albums : albumList.values()) {
@@ -135,7 +107,6 @@ public class LibraryModel {
 				for (Song s : albumSongs) {
 					if (s.getName().equals(title) && s.getAuthor().equals(author)) {
 						album.RemoveSong(s);
-						System.out.print("album is wrong ");
 						break;
 					}
 				}
@@ -146,6 +117,11 @@ public class LibraryModel {
 	}
 	
 	public boolean removeAlbum(String title) {
+		
+		if (!albumList.containsKey(title)) {
+			return false;
+		}
+		
 		ArrayList<Song> remSong = new ArrayList<Song>();
 		ArrayList<Album> albums = albumList.get(title);
 		for (Album a : albums) {
@@ -162,29 +138,31 @@ public class LibraryModel {
 	}
 
 	public ArrayList<Song> getSongsSortedRating() {
-		ArrayList<Song> allSongs = new ArrayList<>();
+		ArrayList<Song> songs = new ArrayList<>();
 		for (ArrayList<Song> songlist : songNames.values()) {
 			for (Song s : songlist) {
-				allSongs.add(s);
+				songs.add(s);
 			}
 		}
 
-		int size = allSongs.size();
-		for (int i = 0; i < size - 1; i++) {
-			int value = i;
-			for (int j = i + 1; j < size; j++) {
-				if (allSongs.get(j).getRating() > allSongs.get(value).getRating()) {
-					value = j;
-				}
-			}
-			if (value != i) {
-				Song current = allSongs.get(i);
-				allSongs.set(value, current);
-				allSongs.set(i, allSongs.get(value));
+        int n = songs.size();
+        boolean swapped;
 
-			}
-		}
-		return allSongs;
+        for (int i = 0; i < n - 1; i++) {
+            swapped = false;
+            for (int j = 0; j < n - i - 1; j++) {
+                if (songs.get(j).getRating() < songs.get(j + 1).getRating()) { // Descending order
+                    // Swap songs[j] and songs[j+1]
+                    Song temp = songs.get(j);
+                    songs.set(j, songs.get(j + 1));
+                    songs.set(j + 1, temp);
+                    swapped = true;
+                }
+            }
+            // If no swaps occurred, the list is already sorted
+            if (!swapped) break;
+        }
+        return songs;
 
 	}
 
@@ -224,7 +202,7 @@ public class LibraryModel {
 	}
 	
 	public void makeTopTen() {
-		Playlist mostPlayed = playlists.get("mostlistened");
+		Playlist mostPlayed = playlists.get("Most Listened");
 		if (playedSongs.size() <= 10) {
 			for (Song s : playedSongs) {
 				mostPlayed.addSong(s);
@@ -237,7 +215,6 @@ public class LibraryModel {
 				mostPlayed.addSong(s);
 			}
 		}
-
 	}
 
 	/*
@@ -783,6 +760,11 @@ public class LibraryModel {
 			for (Song s : songNames.get(songName)) {
 				if (s.getAuthor().equals(artist)) {
 					s.setFavorite(favorite);
+					if (favorite) {
+						playlists.get("Favorite").addSong(s);
+					} else {
+						playlists.get("Favorite").removeSong(s.getName());
+					}
 					return true;
 				}
 			}
