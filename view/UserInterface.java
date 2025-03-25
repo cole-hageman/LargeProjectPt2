@@ -38,6 +38,10 @@ public class UserInterface {
 		}
 	}
 
+	/*
+	 * Method: logout Purpose: log a user out of the main application and save to
+	 * the username/password database
+	 */
 	private void logout() {
 		if (mainApplication.logout()) {
 			System.out.println("You have been successfully logged out.");
@@ -91,17 +95,20 @@ public class UserInterface {
 		System.out.println("\nUse 'printAlbumInfo' to show the information about this song's album.\n");
 		return foundSongs.get(0);
 	}
-	
+
+	/*
+	 * Method: searchSongGenra(genre) Purpose: search a song by genre
+	 */
 	private void searchSongGenre(String genre) {
 		ArrayList<Song> foundSongs = userLib.searchGenre(genre);
-		
+
 		if (foundSongs.size() == 0) {
 			System.out.println("No songs of genre in library.");
 			return;
 		}
-		
+
 		System.out.println("-----------------\n" + genre + " Songs\n-----------------");
-		
+
 		for (Song s : foundSongs) {
 			System.out.println(s.toString());
 		}
@@ -219,71 +226,74 @@ public class UserInterface {
 		printAlbumList(foundAlbums);
 	}
 
-	private void searchPlaylist(String playlistName) {
-		ArrayList<Playlist> foundLists = userLib.searchPlaylist(playlistName);
-
-		if (foundLists.size() == 0) {
-			System.out.println("Playlist not found in user's library.");
-			return;
-		}
-
-		System.out.println("-----------------\n   Playlist\n-----------------");
-
-		for (Playlist p : foundLists) {
-			System.out.println(p.getName());
-		}
-
-		for (Playlist p : foundLists) {
-			this.printSongsInPlaylist(p.getName());
-		}
-	}
-
-	
+	/*
+	 * Method: sortSongsName() Purpose: print a sorted list of songs by name from
+	 * userlibrary
+	 */
 	private void sortSongsName() {
 		ArrayList<Song> sortedSongs = userLib.sortSongsName();
-		
+
 		if (sortedSongs.size() == 0) {
 			System.out.println("No songs in library.");
 			return;
 		}
-		
+
 		System.out.println("-----------------\n   Songs\n-----------------");
-		
+
 		for (Song s : sortedSongs) {
 			System.out.println(s.toString());
 		}
 	}
-	
+
+	/*
+	 * Method: sortSongsArtist() Purpose: print a sorted list of songs by artist
+	 * from userlibrary
+	 */
 	private void sortSongsArtist() {
 		ArrayList<Song> sortedSongs = userLib.sortByArtist();
-		
+
 		if (sortedSongs.size() == 0) {
 			System.out.println("No songs in library.");
 			return;
 		}
-		
+
 		System.out.println("-----------------\n   Songs\n-----------------");
-		
+
 		for (Song s : sortedSongs) {
 			System.out.println(s.toString());
 		}
 	}
-	
+
+	/*
+	 * Method: sortSongsRating Purpose: print a sorted list of songs by rating from
+	 * userlibrary
+	 */
 	private void sortSongsRating() {
 		ArrayList<Song> sortedSongs = userLib.getSongsSortedRating();
-		
+
 		if (sortedSongs.size() == 0) {
 			System.out.println("No songs in library.");
 			return;
 		}
-		
+
 		System.out.println("-----------------\n   Songs\n-----------------");
-		
+
 		for (Song s : sortedSongs) {
 			System.out.println(s.toString());
 		}
 	}
-	
+
+	/*
+	 * Method: playSong(title, artist) Purpose: play a song in the user library
+	 */
+	private void playSong(String title, String artist) {
+		if (userLib.playSong(title, artist)) {
+			System.out.println("Played " + title + " by " + artist);
+		} else {
+			System.out.println("Unable to play song.");
+		}
+	}
+
 	/*
 	 * Method: addSongToLibrary(title) Purpose: add a song to the users library
 	 */
@@ -295,6 +305,10 @@ public class UserInterface {
 		}
 	}
 
+	/*
+	 * Method: removeSong(title, author) Purpose: remove a song from the user's
+	 * library
+	 */
 	private void removeSong(String title, String author) {
 		if (userLib.removeSong(title, author)) {
 			System.out.println("Song successfully removed.");
@@ -302,15 +316,18 @@ public class UserInterface {
 			System.out.println("Song not found.");
 		}
 	}
-	
-	private void removeAlbum(String title, String author) {
+
+	/*
+	 * Method: removeAlbum Purpose: remove an album from the user's library
+	 */
+	private void removeAlbum(String title) {
 		if (userLib.removeAlbum(title)) {
 			System.out.println("Album successfully removed.");
 		} else {
 			System.out.println("Album not found.");
 		}
 	}
-	
+
 	/*
 	 * Method: addAlbumToLibrary(title) Purpose: add an album to the user's library
 	 */
@@ -372,7 +389,7 @@ public class UserInterface {
 		ArrayList<Album> albums = userLib.getAlbums();
 
 		if (albums.size() == 0) {
-			System.out.print("No albums in library.");
+			System.out.println("No albums in library.");
 			return;
 		}
 
@@ -535,47 +552,42 @@ public class UserInterface {
 		System.out.println("------------------------");
 		System.out.println("   List of commands");
 		System.out.println("------------------------");
-		
+
+		System.out.println("  'playSong <title>, <artist>' - plays a song with name 'title'.\n");
+
 		System.out.println("SEARCHING");
 		System.out.println("  'findSongTitle <title>' - prints information about a song with name 'title'.");
 		System.out
 				.println("  'findSongArtist <artistName>' - prints information about a song with artist 'artistName'.");
-		System.out.println("  'findSongGenre <genre>' - prints songs of genre 'genre'.");	
+		System.out.println("  'findSongGenre <genre>' - prints songs of genre 'genre'.");
 		System.out.println("  'findAlbumTitle <title>' - prints information about a album with name 'title'.");
 		System.out.println(
 				"  'findAlbumArtist <artistName>' - prints information about a album with artist 'artistName'.");
-		System.out.println("  'findPlaylist <title>' - prints a found playlist with name 'title' and its songs.");	
 		System.out.println("  'searchStoreSongTitle <title>' - searches the store for a song with name 'title'.");
 		System.out.println("  'searchStoreSongArtist <artist>' - searches the store for songs with artist 'artist'.");
 		System.out.println("  'searchStoreAlbumTitle <title>' - searches the store for a album with name 'title'.");
 		System.out
 				.println("  'searchStoreAlbumArtist <artist>' - searches the store for albums with artist 'artist'.\n");
-		
-		
+
 		System.out.println("SORTING");
 		System.out.println("  'sortSongsTitle' - prints the songs in the user's library sorted by title.");
-		System.out
-				.println("  'sortSongsArtist' - prints the songs in the user's library sorted by artist name.");
+		System.out.println("  'sortSongsArtist' - prints the songs in the user's library sorted by artist name.");
 		System.out.println("  'sortSongsRating' - prints the songs in the user's library sorted by rating.\n");
-		
-		
+
 		System.out.println("ADDING/REMOVING");
 		System.out
 				.println("  'addSong <title>' - adds a song with name 'title' to user library if it is in the store.");
-		System.out
-				.println("  'removeSong <title>, <author>' - removes a song with name 'title' from user library.");
+		System.out.println("  'removeSong <title>, <author>' - removes a song with name 'title' from user library.");
 		System.out.println(
 				"  'addAlbum <title>' - adds a album with name 'title' and its songs to user library if it is in the store.");
-		System.out
-				.println("  'removeAlbum <title>, <author>' - removes a album with name 'title' from user library.");
+		System.out.println("  'removeAlbum <title>' - removes a album with name 'title' from user library.");
 		System.out.println("  'addPlaylist <name>' - adds a new playlist with name 'name' to user library.");
 		System.out.println(
 				"  'addToPlaylist <playlistName>, <songName>, <artistName>' - adds a song to playlist with name 'playlistName' in user library.");
 		System.out.println("  'removePlaylist <name>' - removes a playlist with name 'name' from user library.");
 		System.out.println(
 				"  'removeFromPlaylist <playlistName>, <songName>' - removes a song from playlist with name 'playlistName' and 'songName'.\n");
-		
-		
+
 		System.out.println("LISTING");
 		System.out.println("  'printSongs' - prints all songs in user library.");
 		System.out.println("  'printAlbums' - prints all albums in user library.");
@@ -583,23 +595,24 @@ public class UserInterface {
 		System.out.println("  'printPlaylists' - prints all playlist names in user library.");
 		System.out.println("  'printPlaylist <playlistName>' - prints all songs in playlist 'playlistName'.");
 		System.out.println("  'printFavorites' - prints all favorited songs in user library.\n");
-		
-		
+
 		System.out.println("RATING");
 		System.out.println(
 				"  'favoriteSong <songName>, <songArtist>, <favorite/unfavorite>' - favorites/unfavorites a song with name 'songName' and 'songArtist'.");
 		System.out.println(
 				"  'rateSong <songName>, <songArtist>, <rating (1-5)>' - rates a song (1-5) with name 'songName' and 'songArtist'.\n");
-		
-		
+
 		System.out.println("TYPE 'logout' TO LOGOUT\n");
-		
-		
+
 		System.out.println("TYPE 'quit' TO QUIT");
-	
+
 		System.out.println("------------------------");
 	}
 
+	/*
+	 * Method: inputHandler Purpose: handle the continuous inputs and take in
+	 * commands
+	 */
 	private void inputHandler() {
 
 		Scanner input = new Scanner(System.in);
@@ -684,16 +697,15 @@ public class UserInterface {
 					} else if (commandArgs[0].toLowerCase().equals("logout")) {
 						this.logout();
 
-						
 					} else if (commandArgs[0].equals("sortSongsTitle")) {
 						this.sortSongsName();
-						
+
 					} else if (commandArgs[0].equals("sortSongsArtist")) {
 						this.sortSongsArtist();
 
 					} else if (commandArgs[0].equals("sortSongsRating")) {
 						this.sortSongsRating();
-						
+
 						// PRINT SONGS
 					} else if (commandArgs[0].equals("printSongs")) {
 						this.printSongs();
@@ -733,16 +745,12 @@ public class UserInterface {
 							this.searchSongGenre(userInput);
 
 							// FIND ALBUM TITLE
-						}else if (commandArgs[0].equals("findAlbumTitle")) {
+						} else if (commandArgs[0].equals("findAlbumTitle")) {
 							this.searchAlbumTitle(userInput);
 
 							// FIND ALBUM ARTIST
 						} else if (commandArgs[0].equals("findAlbumArtist")) {
 							this.searchAlbumArtist(userInput);
-
-							// FIND PLAYLIST
-						} else if (commandArgs[0].equals("findPlaylist")) {
-							this.searchPlaylist(userInput);
 
 							// SEARCH THE STORE FOR SONG BY TITLE
 						} else if (commandArgs[0].equals("searchStoreSongTitle")) {
@@ -794,11 +802,19 @@ public class UserInterface {
 							// RATE SONG
 						} else if (commandArgs[0].equals("removeAlbum")) {
 							String[] args = userInput.split(", ");
-							if (args.length == 2) {
-								this.removeAlbum(args[0], args[1]);
+							if (args.length == 1) {
+								this.removeAlbum(args[0]);
 							} else {
-								System.out.println(
-										"Invalid arguments. Expected format: 'removeAlbum <songName>, <songArtist>'");
+								System.out.println("Invalid arguments. Expected format: 'removeAlbum <songName>'");
+							}
+
+							// RATE SONG
+						} else if (commandArgs[0].equals("playSong")) {
+							String[] args = userInput.split(", ");
+							if (args.length == 2) {
+								this.playSong(args[0], args[1]);
+							} else {
+								System.out.println("Invalid arguments. Expected format: 'playSong <title>, <artist>'");
 							}
 
 							// RATE SONG

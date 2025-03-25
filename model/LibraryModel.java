@@ -104,14 +104,17 @@ public class LibraryModel {
 
 	public boolean removeSong(String title, String author) {
 		
+		if (!songNames.containsKey(title)) {
+			return false;
+		}
+		
 		ArrayList<Song> songs = songNames.get(title);
-		for (int i = 0; i < songs.size(); i++) {
-			Song s = songs.get(i);
-			if (s.getName().equals(title)) {
+		
+		for (Song s : songs) {
+			if (s.getName().equals(title) && s.getAuthor().equals(author)) {
 				System.out.print("remove song is fine");
-				songs.remove(i);
+				songs.remove(s);
 				break;
-
 			}
 		}
 		
@@ -129,10 +132,9 @@ public class LibraryModel {
 		for (ArrayList<Album> albums : albumList.values()) {
 			for (Album album : albums) {
 				ArrayList<Song> albumSongs = album.getSongs();
-				for (int i = 0; i < albumSongs.size(); i++) {
-					Song g = albumSongs.get(i);
-					if (g.getName().equals(title) && g.getAuthor().equals(author)) {
-						album.RemoveSong(g);
+				for (Song s : albumSongs) {
+					if (s.getName().equals(title) && s.getAuthor().equals(author)) {
+						album.RemoveSong(s);
 						System.out.print("album is wrong ");
 						break;
 					}
@@ -409,7 +411,7 @@ public class LibraryModel {
 		ArrayList<Album> foundAlbums = new ArrayList<Album>();
 		for (ArrayList<Album> list : albumList.values()) {
 			for (Album a : list) {
-				if (a.getAuthorName().toLowerCase().equals(artistName.toLowerCase())) {
+				if (a.getAuthorName().equals(artistName)) {
 					foundAlbums.add(a);
 				}
 			}
@@ -540,13 +542,13 @@ public class LibraryModel {
 	}
 
 	private void addSongFromAlbum(Song s) {
-		if (songNames.containsKey(s.getName().toLowerCase())) {
-			for (Song g : songNames.get(s.getName().toLowerCase())) {
+		if (songNames.containsKey(s.getName())) {
+			for (Song g : songNames.get(s.getName())) {
 				if (g.getAuthor().equals(s.getAuthor())) {
 					return;
 				}
 			}
-			songNames.get(s.getName().toLowerCase()).add(s);
+			songNames.get(s.getName()).add(s);
 		} else {
 			ArrayList<Song> newList = new ArrayList<Song>();
 			newList.add(s);
