@@ -49,7 +49,7 @@ public class Playlist {
 	public String toString() {
 		String message=""+name;
 		for(Song s:songs) {
-			message+=songs+"/n";
+			message+=s+"\n";
 		}
 		return message;
 	

@@ -69,6 +69,12 @@ public class LibraryModel {
 		}
 
 	}
+	
+	public void getPlaylist(String name) {
+		Playlist a=playlists.get(name);
+		System.out.print(a);
+		
+	}
 
 	public boolean playSong(String songTitle, String artist) {
 		ArrayList<Song> foundSongs = songNames.get(songTitle);
@@ -80,11 +86,11 @@ public class LibraryModel {
 				value = s;
 			}
 		}
-
 		if (value != null) {
 			value.playSong();
 			playedSongs.add(value);
-			Playlist recent = playlists.get("recent");
+			Playlist recent = playlists.get("Recent");
+			System.out.print(recent);
 			if (recent.getSize() >= 10) {
 				recent.removeFirst();
 			}
@@ -113,7 +119,34 @@ public class LibraryModel {
 
 			}
 		}
-
+		//remove from the albums
+		for (ArrayList<Album> alb: albumList.values()) {
+			for(Album s: alb) {
+				for(Song g: s.getSongs()) {
+					if(g.getAuthor().equals(author) && g.getName().equals(title)) {
+						s.RemoveSong(g);
+						
+					}
+				}
+			}
+			
+		}
+	}
+	
+	public void removeAlbum(String title) {
+		ArrayList<Song> remSong=new ArrayList<Song>();
+		ArrayList<Album> albums=albumList.get(title);
+		for(Album a:albums) {
+			for(Song s: a.getSongs()) {
+				remSong.add(s);
+			}
+		}
+		albumList.remove(title);
+		for(Song s: remSong) {
+			removeSong(s.getAuthor(),s.getName());
+		}
+		
+		
 	}
 
 	public ArrayList<Song> getSongsSortedRating() {
@@ -161,13 +194,20 @@ public class LibraryModel {
 		}
 	}
 
-	public ArrayList<Song> sortSongName(String name){
-		if(songNames.containsKey(name)) {
-			ArrayList<Song> current=songNames.get(name);
-			return sortAlphabetically(current);
+	public LinkedList sortSongName(){
+		ArrayList<String> names=new ArrayList<String>();
+		ArrayList<Song> alphabetically=new ArrayList<Song>();
+		for(ArrayList<Song> arrList: songNames.values()) {
+			for(Song s: arrList) {
+				names.add(s.getName());
+			}
 		}
+		Collections.sort(names);
+		for(String s: names) {
+			alphabetically.add(songNames.get(s).get(0));
+		}
+		return new LinkedList<>(alphabetically);
 
-		return new ArrayList<Song>();
 
 	}
 	
@@ -252,17 +292,21 @@ public class LibraryModel {
 
 	}
 
-	public ArrayList<Song> sortByArtist(String artist) {
-		ArrayList<Song> foundSongs = new ArrayList<Song>();
-		for (ArrayList<Song> list : songNames.values()) {
-			for (Song s : list) {
-				if (s.getAuthor().equals(artist)) {
-					foundSongs.add(s);
-				}
+	public LinkedList sortByArtist(String artist) {
+		ArrayList<String> names=new ArrayList<String>();
+		ArrayList<Song> authors=new ArrayList<Song>();
+		for(ArrayList<Album> arrList: albumList.values()) {
+			for(Album s: arrList) {
+				names.add(s.getAuthorName());
 			}
 		}
+		names = new ArrayList<>(new HashSet<>(names));
+		Collections.sort(names);
+		for(String s: names) {
+			authors.add(songNames.get(s).get(0));
+		}
+		return new LinkedList<>(authors);
 
-		return sortAlphabetically(foundSongs);
 
 	}
 

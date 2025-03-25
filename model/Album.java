@@ -40,6 +40,15 @@ public class Album {
 		return message;
 
 	}
+	
+	public void RemoveSong(Song song) {
+		for(Song s:songsCollection) {
+			if(s.getAuthor().equals(song.getAuthor()) && s.getName().equals(song.getName())) {
+				songsCollection.remove(s);
+			}
+			
+		}
+	}
 
 	/*
 	 * gets the song by name and returns a copy of the song object . null if song
