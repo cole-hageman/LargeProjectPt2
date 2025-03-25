@@ -102,7 +102,7 @@ public class LibraryModel {
 		return false;
 	}
 
-	public void removeSong(String title, String author) {
+	public boolean removeSong(String title, String author) {
 		if (songNames.containsKey(title)) {
 			for (Song s : songNames.get(title)) {
 				if (s.getAuthor().equals(author) && s.getName().equals(title)) {
@@ -131,9 +131,10 @@ public class LibraryModel {
 			}
 			
 		}
+		return true;
 	}
 	
-	public void removeAlbum(String title) {
+	public boolean removeAlbum(String title) {
 		ArrayList<Song> remSong=new ArrayList<Song>();
 		ArrayList<Album> albums=albumList.get(title);
 		for(Album a:albums) {
@@ -146,7 +147,7 @@ public class LibraryModel {
 			removeSong(s.getAuthor(),s.getName());
 		}
 		
-		
+		return true;
 	}
 
 	public ArrayList<Song> getSongsSortedRating() {
@@ -194,7 +195,7 @@ public class LibraryModel {
 		}
 	}
 
-	public LinkedList sortSongName(){
+	public ArrayList<Song> sortSongsName(){
 		ArrayList<String> names=new ArrayList<String>();
 		ArrayList<Song> alphabetically=new ArrayList<Song>();
 		for(ArrayList<Song> arrList: songNames.values()) {
@@ -206,7 +207,7 @@ public class LibraryModel {
 		for(String s: names) {
 			alphabetically.add(songNames.get(s).get(0));
 		}
-		return new LinkedList<>(alphabetically);
+		return alphabetically;
 
 
 	}
@@ -292,21 +293,31 @@ public class LibraryModel {
 
 	}
 
-	public LinkedList sortByArtist(String artist) {
+	public ArrayList<Song> sortByArtist() {
+		
 		ArrayList<String> names=new ArrayList<String>();
 		ArrayList<Song> authors=new ArrayList<Song>();
-		for(ArrayList<Album> arrList: albumList.values()) {
+		
+		for(ArrayList<Album> arrList : albumList.values()) {
 			for(Album s: arrList) {
 				names.add(s.getAuthorName());
 			}
 		}
+		
 		names = new ArrayList<>(new HashSet<>(names));
 		Collections.sort(names);
-		for(String s: names) {
-			authors.add(songNames.get(s).get(0));
+		
+		for (String n : names) {
+			for (ArrayList<Song> list : songNames.values()) {
+				for (Song s : list) {
+					if (s.getAuthor().equals(n)) {
+						authors.add(s);
+					}
+				}
+			}
 		}
-		return new LinkedList<>(authors);
-
+		
+		return authors;
 
 	}
 
