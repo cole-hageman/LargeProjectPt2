@@ -497,6 +497,35 @@ public class UserInterface {
 	}
 
 	/*
+	 * Method: shuffle
+	 * Purpose: print a shuffled list of the songs
+	 */
+	private void shuffle() {
+		ArrayList<Song> list = userLib.shuffle();
+		
+		if (list.size() == 0) {
+			System.out.println("No songs in library.");
+			return;
+		}
+		for (Song s : list) {
+			System.out.println(s.toString());
+		}
+	}
+	
+	private void shufflePlaylist(String playlistName) {
+		ArrayList<Song> list = userLib.shufflePlaylist(playlistName);
+		
+		if (list.size() == 0) {
+			System.out.println("Playlist not found or no songs inside.");
+			return;
+		}
+		
+		for (Song s : list) {
+			System.out.println(s.toString());
+		}
+	}
+	
+	/*
 	 * Method addPlaylist(name) Purpose: add a new playlist to library
 	 */
 	private void addPlaylist(String name) {
@@ -555,6 +584,10 @@ public class UserInterface {
 
 		System.out.println("  'playSong <title>, <artist>' - plays a song with name 'title'.\n");
 
+		System.out.println("  'shufflePlaylist <playlist>' - returns a random odering of songs in a given playlist.\n");
+		System.out.println("  'shuffle' - returns a random ordering of songs.\n");
+		
+		
 		System.out.println("SEARCHING");
 		System.out.println("  'findSongTitle <title>' - prints information about a song with name 'title'.");
 		System.out
@@ -711,6 +744,10 @@ public class UserInterface {
 						this.printSongs();
 
 						// PRINT ALBUMS
+					} else if (commandArgs[0].equals("shuffle")) {
+						this.shuffle();
+
+						// PRINT ALBUMS
 					} else if (commandArgs[0].equals("printAlbums")) {
 						this.printAlbums();
 
@@ -740,6 +777,9 @@ public class UserInterface {
 							// FIND SONG ARTIST
 						} else if (commandArgs[0].equals("findSongArtist")) {
 							songSearched = this.searchSongArtist(userInput);
+
+						} else if (commandArgs[0].equals("shufflePlaylist")) {
+							this.shufflePlaylist(userInput);
 
 						} else if (commandArgs[0].equals("findSongGenre")) {
 							this.searchSongGenre(userInput);
