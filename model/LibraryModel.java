@@ -103,48 +103,57 @@ public class LibraryModel {
 	}
 
 	public boolean removeSong(String title, String author) {
-		if (songNames.containsKey(title)) {
-			for (Song s : songNames.get(title)) {
-				if (s.getAuthor().equals(author) && s.getName().equals(title)) {
-					songNames.get(title).remove(s);
-				}
-			}
-
-		}
-		for (Playlist playlists : playlists.values()) {
-			for (Song value : playlists.getSongs()) {
-				if (value.getAuthor().equals(author) && value.getName().equals(title)) {
-					playlists.removeSong(title);
-				}
+		
+		ArrayList<Song> songs = songNames.get(title);
+		for (int i = 0; i < songs.size(); i++) {
+			Song s = songs.get(i);
+			if (s.getName().equals(title)) {
+				System.out.print("remove song is fine");
+				songs.remove(i);
+				break;
 
 			}
 		}
-		//remove from the albums
-		for (ArrayList<Album> alb: albumList.values()) {
-			for(Album s: alb) {
-				for(Song g: s.getSongs()) {
-					if(g.getAuthor().equals(author) && g.getName().equals(title)) {
-						s.RemoveSong(g);
-						
+		
+		if (songs.isEmpty()) {
+			songNames.remove(title);
+		}
+		
+		for (Playlist p : playlists.values()) {
+			if (p.removeSong(title)) {
+				System.out.print("it works");
+			}
+
+		}
+		
+		for (ArrayList<Album> albums : albumList.values()) {
+			for (Album album : albums) {
+				ArrayList<Song> albumSongs = album.getSongs();
+				for (int i = 0; i < albumSongs.size(); i++) {
+					Song g = albumSongs.get(i);
+					if (g.getName().equals(title) && g.getAuthor().equals(author)) {
+						album.RemoveSong(g);
+						System.out.print("album is wrong ");
+						break;
 					}
 				}
 			}
-			
+
 		}
 		return true;
 	}
 	
 	public boolean removeAlbum(String title) {
-		ArrayList<Song> remSong=new ArrayList<Song>();
-		ArrayList<Album> albums=albumList.get(title);
-		for(Album a:albums) {
-			for(Song s: a.getSongs()) {
+		ArrayList<Song> remSong = new ArrayList<Song>();
+		ArrayList<Album> albums = albumList.get(title);
+		for (Album a : albums) {
+			for (Song s : a.getSongs()) {
 				remSong.add(s);
 			}
 		}
 		albumList.remove(title);
-		for(Song s: remSong) {
-			removeSong(s.getAuthor(),s.getName());
+		for (Song s : remSong) {
+			removeSong(s.getAuthor(), s.getName());
 		}
 		
 		return true;
