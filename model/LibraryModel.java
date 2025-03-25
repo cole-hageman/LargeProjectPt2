@@ -72,24 +72,20 @@ public class LibraryModel {
 
 	public boolean playSong(String songTitle, String artist) {
 		ArrayList<Song> foundSongs = songNames.get(songTitle);
-
 		Song value = null;
-
 		for (Song s : foundSongs) {
 			if (s.getAuthor().toLowerCase().equals(artist.toLowerCase())) {
 				value = s;
 			}
 		}
-
 		if (value != null) {
 			value.playSong();
 			playedSongs.add(value);
-			Playlist recent = playlists.get("recent");
+			Playlist recent = playlists.get("Recent");
 			if (recent.getSize() >= 10) {
 				recent.removeFirst();
 			}
 			recent.addSong(value);
-
 			return true;
 		}
 
@@ -97,21 +93,54 @@ public class LibraryModel {
 	}
 
 	public void removeSong(String title, String author) {
-		if (songNames.containsKey(title)) {
-			for (Song s : songNames.get(title)) {
-				if (s.getAuthor().equals(author) && s.getName().equals(title)) {
-					songNames.get(title).remove(s);
-				}
+		ArrayList<Song> songs = songNames.get(title);
+		for (int i = 0; i < songs.size(); i++) {
+			Song s = songs.get(i);
+			if (s.getName().equals(title)) {
+				System.out.print("remove song is fine");
+				songs.remove(i);
+				break;
+
+			}
+		}
+		if (songs.isEmpty()) {
+			songNames.remove(title);
+		}
+
+		for (Playlist p : playlists.values()) {
+			if (p.removeSong(title)) {
+				System.out.print("it works");
 			}
 
 		}
-		for (Playlist playlists : playlists.values()) {
-			for (Song value : playlists.getSongs()) {
-				if (value.getAuthor().equals(author) && value.getName().equals(title)) {
-					playlists.removeSong(title);
-				}
 
+		for (ArrayList<Album> albums : albumList.values()) {
+			for (Album album : albums) {
+				ArrayList<Song> albumSongs = album.getSongs();
+				for (int i = 0; i < albumSongs.size(); i++) {
+					Song g = albumSongs.get(i);
+					if (g.getName().equals(title) && g.getAuthor().equals(author)) {
+						album.RemoveSong(g);
+						System.out.print("album is wrong ");
+						break;
+					}
+				}
 			}
+		}
+
+	}
+
+	public void removeAlbum(String title) {
+		ArrayList<Song> remSong = new ArrayList<Song>();
+		ArrayList<Album> albums = albumList.get(title);
+		for (Album a : albums) {
+			for (Song s : a.getSongs()) {
+				remSong.add(s);
+			}
+		}
+		albumList.remove(title);
+		for (Song s : remSong) {
+			removeSong(s.getAuthor(), s.getName());
 		}
 
 	}
@@ -161,16 +190,22 @@ public class LibraryModel {
 		}
 	}
 
-	public ArrayList<Song> sortSongName(String name){
-		if(songNames.containsKey(name)) {
-			ArrayList<Song> current=songNames.get(name);
-			return sortAlphabetically(current);
+	public LinkedList sortSongName() {
+		ArrayList<String> names = new ArrayList<String>();
+		ArrayList<Song> alphabetically = new ArrayList<Song>();
+		for (ArrayList<Song> arrList : songNames.values()) {
+			for (Song s : arrList) {
+				names.add(s.getName());
+			}
 		}
-
-		return new ArrayList<Song>();
+		Collections.sort(names);
+		for (String s : names) {
+			alphabetically.add(songNames.get(s).get(0));
+		}
+		return new LinkedList<>(alphabetically);
 
 	}
-	
+
 	public void makeTopTen() {
 		Playlist mostPlayed = playlists.get("mostlistened");
 		if (playedSongs.size() <= 10) {
@@ -252,17 +287,20 @@ public class LibraryModel {
 
 	}
 
-	public ArrayList<Song> sortByArtist(String artist) {
-		ArrayList<Song> foundSongs = new ArrayList<Song>();
-		for (ArrayList<Song> list : songNames.values()) {
-			for (Song s : list) {
-				if (s.getAuthor().equals(artist)) {
-					foundSongs.add(s);
-				}
+	public LinkedList sortByArtist(String artist) {
+		ArrayList<String> names = new ArrayList<String>();
+		ArrayList<Song> authors = new ArrayList<Song>();
+		for (ArrayList<Album> arrList : albumList.values()) {
+			for (Album s : arrList) {
+				names.add(s.getAuthorName());
 			}
 		}
-
-		return sortAlphabetically(foundSongs);
+		names = new ArrayList<>(new HashSet<>(names));
+		Collections.sort(names);
+		for (String s : names) {
+			authors.add(songNames.get(s).get(0));
+		}
+		return new LinkedList<>(authors);
 
 	}
 
