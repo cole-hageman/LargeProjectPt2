@@ -240,7 +240,7 @@ public class UserInterface {
 
 	
 	private void sortSongsName() {
-		ArrayList<String> sortedSongs = userLib.sortSongsName();
+		ArrayList<Song> sortedSongs = userLib.sortSongsName();
 		
 		if (sortedSongs.size() == 0) {
 			System.out.println("No songs in library.");
@@ -249,13 +249,13 @@ public class UserInterface {
 		
 		System.out.println("-----------------\n   Songs\n-----------------");
 		
-		for (String s : sortedSongs) {
-			System.out.println(s);
+		for (Song s : sortedSongs) {
+			System.out.println(s.toString());
 		}
 	}
 	
 	private void sortSongsArtist() {
-		ArrayList<Song> sortedSongs = userLib.sortSongsArtist();
+		ArrayList<Song> sortedSongs = userLib.sortByArtist();
 		
 		if (sortedSongs.size() == 0) {
 			System.out.println("No songs in library.");
@@ -304,7 +304,7 @@ public class UserInterface {
 	}
 	
 	private void removeAlbum(String title, String author) {
-		if (userLib.removeAlbum(title, author)) {
+		if (userLib.removeAlbum(title)) {
 			System.out.println("Album successfully removed.");
 		} else {
 			System.out.println("Album not found.");
