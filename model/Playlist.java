@@ -29,9 +29,10 @@ public class Playlist {
 	 */
 	
 	public boolean removeSong(String title) {
-		for (Song s : songs) {
-			if (s.getName().toLowerCase().equals(title.toLowerCase())) {
-				songs.remove(s);
+		for (int i = 0; i < songs.size(); i++) {
+			Song s = songs.get(i);
+			if (s.getName().equals(title) ) {
+				songs.remove(i);
 				return true;
 			}
 		}
@@ -39,8 +40,11 @@ public class Playlist {
 	}
 	
 	public void removeFirst() {
-		songs.remove(0);
+		if (!songs.isEmpty()) {
+			songs.remove(0);
+		}
 	}
+
 	
 	public int getSize() {
 		return songs.size();
