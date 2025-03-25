@@ -25,11 +25,6 @@ public class Playlist {
 		}
 	}
 	
-	public ArrayList<Song> shuffleSongs() {
-		Collections.shuffle(songs);
-		return new ArrayList<Song>(songs);
-	}
-	
 	/*
 	 * Removes a song by the title of the playlist
 	 * 

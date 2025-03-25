@@ -15,9 +15,9 @@ class TestSong {
 	
 	@BeforeEach
     void setUp() {
-        Song1=new Song("Tu si","Tito","Incomodo");
-        Song2=new Song("ella","Junior h","CT");
-        Song3=new Song("Tu si","Tito","Incomodo");
+        Song1=new Song("Tu si","Tito","Incomodo", "a");
+        Song2=new Song("ella","Junior h","CT", "a");
+        Song3=new Song("Tu si","Tito","Incomodo", "a");
         
 
     }

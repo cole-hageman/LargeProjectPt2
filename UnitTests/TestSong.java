@@ -18,12 +18,12 @@ class TestSong {
 	
 	@BeforeEach
     void setUp() {
-        Song1=new Song("Tu si","Tito","Incomodo");
-        Song2=new Song("ella","Junior h","CT");
-        Song3=new Song("Tu si","Tito","Incomodo");
-        Song4=new Song("Tu si","Genesis","Incomodo");
-        Song5=new Song("Tu si","Genesis","Pop");
-        Song6=new Song("Tu si","Tito","CT");
+        Song1=new Song("Tu si","Tito","Incomodo", "a");
+        Song2=new Song("ella","Junior h","CT", "a");
+        Song3=new Song("Tu si","Tito","Incomodo", "a");
+        Song4=new Song("Tu si","Genesis","Incomodo", "a");
+        Song5=new Song("Tu si","Genesis","Pop", "a");
+        Song6=new Song("Tu si","Tito","CT", "a");
     }
 	
 	

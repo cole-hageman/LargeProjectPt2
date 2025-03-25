@@ -24,8 +24,8 @@ class TestPlaylist {
     void setUp() {
         PlayList=new Playlist("mine");
         PlayList2=new Playlist("mine");
-        Song1=new Song("Tu si","Tito","Incomodo");
-        Song2=new Song("ella","Junior h","CT");
+        Song1=new Song("Tu si","Tito","Incomodo", "a");
+        Song2=new Song("ella","Junior h","CT", "a");
         PlayList.addSong(Song1);
         PlayList.addSong(Song2);
         PlayList2.addSong(Song1);
@@ -67,6 +67,7 @@ class TestPlaylist {
 		Assertions.assertTrue(songs1.get(0).equals(songs2.get(0)));
 		
 	}
+	
 	
 	
 
