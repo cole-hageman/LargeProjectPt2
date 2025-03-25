@@ -90,7 +90,7 @@ public class LibraryModel {
 			value.playSong();
 			playedSongs.add(value);
 			Playlist recent = playlists.get("Recent");
-			System.out.print(recent);
+
 			if (recent.getSize() >= 10) {
 				recent.removeFirst();
 			}
@@ -417,19 +417,11 @@ public class LibraryModel {
 
 		ArrayList<Playlist> newList = new ArrayList<Playlist>();
 
-		newList.add(playlists.get(playlistName));
+		if (playlists.containsKey(playlistName)) {
+			newList.add(playlists.get(playlistName));
+		}
 
 		return newList;
-	}
-
-	/*
-	 * Method: hasAlbum(title) Purpose: check if an album with name title is found
-	 * in the albumList
-	 */
-	private boolean hasAlbum(String title) {
-
-		return albumList.containsKey(title);
-
 	}
 
 	/*
