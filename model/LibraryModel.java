@@ -345,6 +345,18 @@ public class LibraryModel {
 		return allSongs;
 
 	}
+	
+	public ArrayList<Song> shufflePlaylist(String playlistName) {
+		
+		ArrayList<Song> songs = new ArrayList<Song>();
+		
+		for (Song s : playlists.get(playlistName).getSongs()) {
+			songs.add(s);
+		}
+		Collections.shuffle(songs);
+		return songs;
+
+	}
 
 	/*
 	 * Method: searchAlbumTitle(albumName) Purpose: search for an album by name and
