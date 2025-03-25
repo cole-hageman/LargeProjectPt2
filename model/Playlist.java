@@ -20,7 +20,14 @@ public class Playlist {
 	}
 	
 	public void addSong(Song s) {
-		songs.add(s);
+		if (!songs.contains(s)) {
+			songs.add(s);
+		}
+	}
+	
+	public ArrayList<Song> shuffleSongs() {
+		Collections.shuffle(songs);
+		return new ArrayList<Song>(songs);
 	}
 	
 	/*
@@ -29,10 +36,9 @@ public class Playlist {
 	 */
 	
 	public boolean removeSong(String title) {
-		for (int i = 0; i < songs.size(); i++) {
-			Song s = songs.get(i);
-			if (s.getName().equals(title) ) {
-				songs.remove(i);
+		for (Song s : songs) {
+			if (s.getName().toLowerCase().equals(title.toLowerCase())) {
+				songs.remove(s);
 				return true;
 			}
 		}
@@ -40,11 +46,8 @@ public class Playlist {
 	}
 	
 	public void removeFirst() {
-		if (!songs.isEmpty()) {
-			songs.remove(0);
-		}
+		songs.remove(0);
 	}
-
 	
 	public int getSize() {
 		return songs.size();

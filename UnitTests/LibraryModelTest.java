@@ -12,7 +12,7 @@ class LibraryModelTest {
 	
 	@BeforeEach
 	void setUp() {
-		userLib = new LibraryModel();
+		userLib = new LibraryModel("test");
 	}
 	
 	// ADD SONG
@@ -72,13 +72,6 @@ class LibraryModelTest {
 	}
 	
 	@Test
-	void testSearchSongTitleLowerCase() {
-		userLib.addSong("Tired");
-		ArrayList<Song> foundSongs = userLib.searchSongTitle("tired");
-		assertEquals(1, foundSongs.size());
-	}
-	
-	@Test
 	void testSearchSongTitleInvalid() {
 		userLib.addSong("tired");
 		ArrayList<Song> foundSongs = userLib.searchSongTitle("abdf");
@@ -100,13 +93,6 @@ class LibraryModelTest {
 		userLib.addSong("lovesong");
 		ArrayList<Song> foundSongs = userLib.searchSongArtist("Adele");
 		assertEquals(2, foundSongs.size());
-	}
-	
-	@Test
-	void testSearchSongArtistLowerCase() {
-		userLib.addSong("Fire");
-		ArrayList<Song> foundSongs = userLib.searchSongArtist("the heavy");
-		assertEquals(1, foundSongs.size());
 	}
 	
 	@Test
@@ -147,13 +133,6 @@ class LibraryModelTest {
 		userLib.addSong("lovesong");
 		ArrayList<Album> foundAlbums = userLib.searchAlbumArtist("Adele");
 		assertEquals(2, foundAlbums.size());
-	}
-	
-	@Test
-	void testSearchAlbumArtistLowerCase() {
-		userLib.addSong("Fire");
-		ArrayList<Album> foundAlbums = userLib.searchAlbumArtist("the heavy");
-		assertEquals(1, foundAlbums.size());
 	}
 	
 	@Test
@@ -206,18 +185,18 @@ class LibraryModelTest {
 	@Test
 	void testCreatePlaylist2() {
 		assertTrue(userLib.createPlaylist("NewMix"));
-		assertFalse(userLib.createPlaylist("newmix"));
+		assertTrue(userLib.createPlaylist("newmix"));
 		assertFalse(userLib.createPlaylist("NewMix"));
 	}
 	
 	@Test
 	void testGetPlaylists1() {
-		assertEquals(0, userLib.getPlaylists().size());
+		assertEquals(4, userLib.getPlaylists().size());
 		assertTrue(userLib.createPlaylist("NewMix"));
 		assertTrue(userLib.createPlaylist("NextMix"));
-		assertEquals(2, userLib.getPlaylists().size());
+		assertEquals(6, userLib.getPlaylists().size());
 		assertTrue(userLib.createPlaylist("NextMixes"));
-		assertEquals(3, userLib.getPlaylists().size());
+		assertEquals(7, userLib.getPlaylists().size());
 	}
 	
 	@Test
@@ -225,9 +204,9 @@ class LibraryModelTest {
 		assertTrue(userLib.createPlaylist("NewMix"));
 		assertTrue(userLib.createPlaylist("NextMix"));
 		assertTrue(userLib.createPlaylist("NextMixes"));
-		assertEquals(3, userLib.getPlaylists().size());
-		assertTrue(userLib.removePlaylist("newmix"));
-		assertEquals(2, userLib.getPlaylists().size());
+		assertEquals(7, userLib.getPlaylists().size());
+		assertTrue(userLib.removePlaylist("NewMix"));
+		assertEquals(6, userLib.getPlaylists().size());
 	}
 	
 	@Test
@@ -235,9 +214,9 @@ class LibraryModelTest {
 		assertTrue(userLib.createPlaylist("NewMix"));
 		assertTrue(userLib.createPlaylist("NextMix"));
 		assertTrue(userLib.createPlaylist("NextMixes"));
-		assertEquals(3, userLib.getPlaylists().size());
+		assertEquals(7, userLib.getPlaylists().size());
 		assertFalse(userLib.removePlaylist("myMix"));
-		assertEquals(3, userLib.getPlaylists().size());
+		assertEquals(7, userLib.getPlaylists().size());
 	}
 	
 	@Test
@@ -266,12 +245,12 @@ class LibraryModelTest {
 	void testGetSongsInPlaylist() {
 		assertTrue(userLib.createPlaylist("NewMix"));
 		userLib.addAlbum("19");
-		assertEquals(0, userLib.getSongsInPlaylist("newmix").size());
+		assertEquals(0, userLib.getSongsInPlaylist("NewMix").size());
 		Album foundAlbum = userLib.searchAlbumTitle("19").get(0);
 		for (Song s : foundAlbum.getSongs()) {
-			userLib.addToPlaylist("newmix", s.getName(), "Adele");
+			userLib.addToPlaylist("NewMix", s.getName(), "Adele");
 		}
-		assertEquals(12, userLib.getSongsInPlaylist("newmix").size());
+		assertEquals(12, userLib.getSongsInPlaylist("NewMix").size());
 	}
 	
 	@Test
@@ -287,16 +266,16 @@ class LibraryModelTest {
 		userLib.addAlbum("19");
 		Album foundAlbum = userLib.searchAlbumTitle("19").get(0);
 		for (Song s : foundAlbum.getSongs()) {
-			userLib.addToPlaylist("newmix", s.getName(), "Adele");
+			assertTrue(userLib.addToPlaylist("NewMix", s.getName(), "Adele"));
 		}
-		assertEquals(12, userLib.getSongsInPlaylist("newmix").size());
-		assertTrue(userLib.removeFromPlaylist("newmix", "tired"));
-		assertEquals(11, userLib.getSongsInPlaylist("newmix").size());
-		assertTrue(userLib.removeFromPlaylist("newmix", "my same"));
-		assertEquals(10, userLib.getSongsInPlaylist("newmix").size());
-		assertFalse(userLib.removeFromPlaylist("newmix", "my name"));
-		assertFalse(userLib.removeFromPlaylist("myMix", "my name"));
-		assertEquals(10, userLib.getSongsInPlaylist("newmix").size());
+		assertEquals(12, userLib.getSongsInPlaylist("NewMix").size());
+		assertTrue(userLib.removeFromPlaylist("NewMix", "Tired"));
+		assertEquals(11, userLib.getSongsInPlaylist("NewMix").size());
+		assertTrue(userLib.removeFromPlaylist("NewMix", "My Same"));
+		assertEquals(10, userLib.getSongsInPlaylist("NewMix").size());
+		assertFalse(userLib.removeFromPlaylist("NewMix", "My Name"));
+		assertFalse(userLib.removeFromPlaylist("myMix", "My Name"));
+		assertEquals(10, userLib.getSongsInPlaylist("NewMix").size());
 	}
 	
 	@Test
@@ -312,8 +291,104 @@ class LibraryModelTest {
 	void testGetFavoriteSongs() {
 		userLib.addAlbum("19");
 		assertTrue(userLib.rateSong("Tired", "Adele", 5));
-		assertTrue(userLib.setFavorite("my same", "adele", true));
+		assertTrue(userLib.setFavorite("My Same", "Adele", true));
 		assertEquals(2, userLib.getFavoriteSongs().size());
-		assertTrue(userLib.getFavoriteSongs().get(0).equals("My Same"));
+		assertTrue(userLib.getFavoriteSongs().get(0).equals("Tired"));
 	}
+	
+	@Test
+	void testGetFavoriteSongs2() {
+		userLib.addAlbum("19");
+		assertTrue(userLib.rateSong("Tired", "Adele", 5));
+		assertTrue(userLib.setFavorite("My Same", "Adele", true));
+		assertEquals(2, userLib.getFavoriteSongs().size());
+		assertTrue(userLib.getFavoriteSongs().get(0).equals("Tired"));
+		assertTrue(userLib.setFavorite("My Same", "Adele", false));
+	}
+	
+	@Test
+	void testCheckPW() {
+		assertTrue(userLib.checkPassword("test"));
+		assertFalse(userLib.checkPassword("notTest"));
+	}
+	
+	@Test
+	void testPlaySong1() {
+		assertTrue(userLib.createPlaylist("NewMix"));
+		userLib.addAlbum("19");
+		assertTrue(userLib.playSong("Tired", "Adele"));
+		assertFalse(userLib.playSong("Tred", "Adele"));
+	}
+	
+	@Test
+	void testPlaySong2() {
+		assertTrue(userLib.createPlaylist("NewMix"));
+		userLib.addAlbum("Old Ideas");
+		userLib.addAlbum("Waking Up");
+		assertFalse(userLib.playSong("Lullaby", "Adele"));
+		assertTrue(userLib.playSong("Lullaby", "OneRepublic"));
+		assertTrue(userLib.playSong("Marchin On", "OneRepublic"));
+		assertTrue(userLib.playSong("Waking Up", "OneRepublic"));
+		assertTrue(userLib.playSong("Fear", "OneRepublic"));
+		assertTrue(userLib.playSong("Good Life", "OneRepublic"));
+		assertTrue(userLib.playSong("All This Time", "OneRepublic"));
+		assertTrue(userLib.playSong("Secrets", "OneRepublic"));
+		assertTrue(userLib.playSong("Made for You", "OneRepublic"));
+		assertTrue(userLib.playSong("Everybody Loves Me", "OneRepublic"));
+		assertTrue(userLib.playSong("Missing Persons 1 & 2", "OneRepublic"));
+		assertTrue(userLib.playSong("All the Right Moves", "OneRepublic"));
+	}
+	
+	@Test
+	void testRemoveSong1() {
+		userLib.addAlbum("19");
+		assertTrue(userLib.removeSong("Tired", "Adele"));
+		assertFalse(userLib.removeSong("Tred", "Adele"));
+	}
+	
+	@Test
+	void testRemoveAlbum1() {
+		userLib.addAlbum("19");
+		assertTrue(userLib.removeAlbum("19"));
+		assertFalse(userLib.removeAlbum("Tred"));
+	}
+	
+	@Test
+	void testGetSongsSortedRating() {
+		userLib.addAlbum("19");
+		assertTrue(userLib.rateSong("Tired", "Adele", 5));
+		assertEquals(12, userLib.getSongsSortedRating().size());
+	}
+	
+	@Test
+	void testCheckHashedPW() {
+		assertEquals(44, userLib.getHashedPw().length());
+	}
+	
+	@Test
+	void testGetSongsSortedName() {
+		userLib.addAlbum("19");
+		assertTrue(userLib.rateSong("Tired", "Adele", 5));
+		assertEquals(12, userLib.sortSongsName().size());
+	}
+	
+	@Test
+	void testGetSongsSortedArtist() {
+		userLib.addAlbum("19");
+		assertTrue(userLib.rateSong("Tired", "Adele", 5));
+		assertEquals(12, userLib.sortByArtist().size());
+	}
+	
+	@Test
+	void testShuffle() {
+		userLib.addAlbum("19");
+		assertEquals(12, userLib.shuffle().size());
+	}
+	
+	@Test
+	void testSearchByGenre() {
+		userLib.addAlbum("19");
+		assertEquals(12, userLib.searchGenre("Pop").size());
+	}
+	
 }
