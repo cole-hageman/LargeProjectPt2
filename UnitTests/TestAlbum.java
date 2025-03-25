@@ -32,11 +32,11 @@ class TestAlbum {
         similarAlbum=new Album("Tito", "Genesis", 2024, "pop");
         similarAlbum2=new Album("Tito", "Genesis", 2023, "pop");
         similarAlbum3=new Album("Tito", "Genesis", 2023, "rock");
-        Song1=new Song("Tu si","Tito","Incomodo");
-        Song2=new Song("Gervonta","Peso","Genesis");
-        Song3=new Song("Hollywood","Peso","Genesis");
-        Song4=new Song("ella","Tito","Incomodo");
-        Song5=new Song("tu","Tito","Incomodo");
+        Song1=new Song("Tu si","Tito","Incomodo","hello");
+        Song2=new Song("Gervonta","Peso","Genesis","hello");
+        Song3=new Song("Hollywood","Peso","Genesis","hello");
+        Song4=new Song("ella","Tito","Incomodo","hello");
+        Song5=new Song("tu","Tito","Incomodo","hello");
         TitoAlbum.addSong(Song1);
         TitoAlbum.addSong(Song4);
         copyAlbum.addSong(Song1);
@@ -105,6 +105,14 @@ class TestAlbum {
 		Assertions.assertFalse(notvalue);
 		Assertions.assertTrue(value);
 		
+	}
+	
+	@Test
+	void testString() {
+		String message="";
+		message+="Album : '" + "Incomodo" + "' by '" + "Tito" + "', Genre '" + "pop" + "'. From the year : " + "2024"
+				+ "\n"+"Tu si"+"\n"+"ella"+"\n";
+		assertEquals(copyAlbum.toString(),message);
 	}
 	
 	@Test 
