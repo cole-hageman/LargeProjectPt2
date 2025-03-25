@@ -542,13 +542,13 @@ public class LibraryModel {
 	}
 
 	private void addSongFromAlbum(Song s) {
-		if (songNames.containsKey(s.getName().toLowerCase())) {
-			for (Song g : songNames.get(s.getName().toLowerCase())) {
+		if (songNames.containsKey(s.getName())) {
+			for (Song g : songNames.get(s.getName())) {
 				if (g.getAuthor().equals(s.getAuthor())) {
 					return;
 				}
 			}
-			songNames.get(s.getName().toLowerCase()).add(s);
+			songNames.get(s.getName()).add(s);
 		} else {
 			ArrayList<Song> newList = new ArrayList<Song>();
 			newList.add(s);
